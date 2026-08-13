@@ -1,0 +1,50 @@
+name: Sync n8n Workflows
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run checks without importing into n8n"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+jobs:
+  sync:
+    name: Prepare n8n sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate n8n JSON before sync
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for path in sorted(Path("n8n").rglob("*.json")):
+              json.loads(path.read_text(encoding="utf-8"))
+              print(f"JSON_OK {path}")
+          PY
+
+      - name: Dry run summary
+        if: ${{ inputs.dry_run == 'true' }}
+        shell: bash
+        run: |
+          echo "Dry run only. No workflow import was attempted."
+          find n8n -name '*.json' -type f | sort
+
+      - name: Stop before real sync
+        if: ${{ inputs.dry_run == 'false' }}
+        shell: bash
+        run: |
+          echo "Real n8n sync is intentionally not implemented yet."
+          echo "Next step: choose API-based import or SSH/pod-based import after testing manually."
+          exit 1
+

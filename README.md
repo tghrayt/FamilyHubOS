@@ -57,6 +57,15 @@ tests/scenarios/        Manual test scenarios
 8. Import main workflows.
 9. Test with `tests/scenarios/mvp.md`.
 
+## GitHub Actions
+
+The repository includes:
+
+- `.github/workflows/ci.yml`: validates JSON, n8n workflow connections, required files and obvious secret leaks on push/PR.
+- `.github/workflows/sync-n8n.yml`: manual placeholder for future n8n sync. It runs in dry-run mode by default and does not import anything yet.
+
+Start with CI only. Enable real n8n sync after the workflows have been imported and tested manually.
+
 ## Secrets
 
 No secret belongs in this repository.
@@ -70,4 +79,3 @@ Use:
 ## Current Status
 
 The repository currently contains skeletons and contracts. They are ready for review/import, but the external integrations still need to be configured in n8n.
-

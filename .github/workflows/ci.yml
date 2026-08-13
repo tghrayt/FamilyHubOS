@@ -1,0 +1,122 @@
+name: FamilyOS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON files
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = sorted(path for path in Path(".").rglob("*.json") if ".git" not in path.parts)
+          if not files:
+              raise SystemExit("No JSON files found.")
+
+          for path in files:
+              with path.open("r", encoding="utf-8") as handle:
+                  json.load(handle)
+              print(f"JSON_OK {path}")
+          PY
+
+      - name: Validate n8n workflow connections
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          files = sorted(Path("n8n").rglob("*.json"))
+          if not files:
+              raise SystemExit("No n8n workflow files found.")
+
+          for path in files:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              node_names = {node["name"] for node in data.get("nodes", [])}
+              connections = data.get("connections", {})
+
+              for source_name, source_connections in connections.items():
+                  for output_groups in source_connections.get("main", []):
+                      for group in output_groups:
+                          if not group:
+                              continue
+                          target = group.get("node")
+                          if target not in node_names:
+                              raise SystemExit(f"BROKEN_CONNECTION {path}: {source_name} -> {target}")
+
+              print(f"CONNECTIONS_OK {path}")
+          PY
+
+      - name: Check required files
+        shell: bash
+        run: |
+          required_files=(
+            "README.md"
+            "IMPLEMENTATION_PLAN.md"
+            ".env.example"
+            "config/familyos.config.example.json"
+            "docs/architecture.md"
+            "docs/import-n8n.md"
+            "docs/notion-schema.md"
+            "docs/security.md"
+            "docs/setup.md"
+            "docs/workflows.md"
+            "infrastructure/k8s/familyos-postgres-init.example.sql"
+            "n8n/workflows/FAMILYOS_01_WEEKLY_PLANNER.json"
+            "n8n/workflows/FAMILYOS_02_RESEARCH.json"
+            "n8n/workflows/FAMILYOS_03_MEETING_BUILDER.json"
+            "n8n/workflows/FAMILYOS_04_FOLLOW_UP.json"
+            "n8n/workflows/FAMILYOS_05_TELEGRAM_ROUTER.json"
+            "n8n/workflows/FAMILYOS_90_ERROR_HANDLER.json"
+            "n8n/subworkflows/SUB_CONTEXT_BUILDER.json"
+            "n8n/subworkflows/SUB_WEB_SEARCH.json"
+            "n8n/subworkflows/SUB_SOURCE_VALIDATOR.json"
+            "n8n/subworkflows/SUB_NOTION.json"
+            "n8n/subworkflows/SUB_CALENDAR.json"
+            "n8n/subworkflows/SUB_NOTIFICATION.json"
+            "schemas/family-context.schema.json"
+            "schemas/meeting-builder.schema.json"
+            "schemas/research-output.schema.json"
+            "schemas/source-validation.schema.json"
+            "schemas/telegram-interaction.schema.json"
+            "tests/scenarios/mvp.md"
+          )
+
+          for file in "${required_files[@]}"; do
+            test -f "$file" || {
+              echo "Missing required file: $file"
+              exit 1
+            }
+            echo "FOUND $file"
+          done
+
+      - name: Scan for obvious committed secrets
+        shell: bash
+        run: |
+          if grep -RInE \
+            '(password=.+[^[:space:]]|token=.+[^[:space:]]|api[_-]?key=.+[^[:space:]]|client[_-]?secret=.+[^[:space:]]|bearer[[:space:]]+[A-Za-z0-9._-]+|sk-[A-Za-z0-9]|ghp_[A-Za-z0-9]|xoxb-[A-Za-z0-9]|AIza[A-Za-z0-9])' \
+            --exclude-dir=.git \
+            --exclude='ci.yml' \
+            .; then
+            echo "Potential secret detected. Remove real secrets before pushing."
+            exit 1
+          fi
+
+          echo "SECRET_SCAN_OK"
+
