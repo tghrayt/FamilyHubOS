@@ -100,6 +100,10 @@ Expected result:
 
 ```json
 {
+  "testResult": {
+    "status": "TEST_SUCCESS",
+    "passed": true
+  },
   "ageMonths": 8,
   "ageYears": 0,
   "ageLabel": "8 mois"
