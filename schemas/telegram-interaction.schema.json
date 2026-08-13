@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://familyos.local/schemas/telegram-interaction.schema.json",
+  "title": "FamilyOS Telegram Interaction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "interactionId",
+    "chatId",
+    "userId",
+    "receivedAt",
+    "type",
+    "authorized",
+    "payload"
+  ],
+  "properties": {
+    "interactionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "chatId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "username": {
+      "type": ["string", "null"]
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["command", "callback", "message"]
+    },
+    "command": {
+      "type": ["string", "null"]
+    },
+    "callbackData": {
+      "type": ["string", "null"]
+    },
+    "messageText": {
+      "type": ["string", "null"]
+    },
+    "authorized": {
+      "type": "boolean"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}
+

@@ -1,0 +1,34 @@
+{
+  "name": "SUB_WEB_SEARCH",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "execute-workflow-trigger",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const queries = $json.queries || [];\nconst topic = $json.topic || '';\nconst category = $json.category || '';\n\nreturn [{\n  json: {\n    topic,\n    category,\n    provider: $env.WEB_SEARCH_PROVIDER || 'not-configured',\n    queries,\n    results: [],\n    warnings: ['SUB_WEB_SEARCH skeleton: configure a search provider before production use.']\n  }\n}];"
+      },
+      "id": "normalize-web-search-request",
+      "name": "Normalize Web Search Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {"main": [[{"node": "Normalize Web Search Request", "type": "main", "index": 0}]]}
+  },
+  "pinData": {},
+  "settings": {"executionOrder": "v1", "timezone": "Europe/Paris"},
+  "staticData": null,
+  "tags": [{"name": "FamilyOS"}, {"name": "Subworkflow"}],
+  "triggerCount": 1,
+  "updatedAt": "2026-08-13T00:00:00.000Z",
+  "versionId": "familyos-sub-web-search-skeleton"
+}
+

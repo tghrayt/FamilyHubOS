@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://familyos.local/schemas/research-output.schema.json",
+  "title": "FamilyOS Research Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "topic",
+    "category",
+    "whyNow",
+    "executiveSummary",
+    "keyPoints",
+    "sources",
+    "discussionQuestions",
+    "practicalIdeas",
+    "warnings"
+  ],
+  "properties": {
+    "topic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1
+    },
+    "whyNow": {
+      "type": "string"
+    },
+    "executiveSummary": {
+      "type": "string"
+    },
+    "keyPoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["statement", "sources"],
+        "properties": {
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "url",
+          "publisher",
+          "date",
+          "readingTimeMinutes",
+          "sourceType",
+          "score"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "publisher": {
+            "type": ["string", "null"]
+          },
+          "date": {
+            "type": ["string", "null"],
+            "format": "date"
+          },
+          "readingTimeMinutes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sourceType": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "discussionQuestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "practicalIdeas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
+

@@ -1,0 +1,515 @@
+{
+  "name": "FAMILYOS_05_TELEGRAM_ROUTER",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "familyos/telegram",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "telegram-webhook",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "familyos-telegram-router"
+    },
+    {
+      "parameters": {
+        "jsCode": "const update = $json;\nconst message = update.message || update.edited_message || null;\nconst callbackQuery = update.callback_query || null;\nconst callbackMessage = callbackQuery?.message || null;\nconst sourceMessage = message || callbackMessage || {};\nconst from = callbackQuery?.from || message?.from || {};\nconst chat = sourceMessage.chat || {};\nconst text = message?.text || null;\nconst callbackData = callbackQuery?.data || null;\nconst command = text && text.startsWith('/') ? text.split(/\\s+/)[0].slice(1).split('@')[0] : null;\nconst type = callbackData ? 'callback' : command ? 'command' : 'message';\n\nreturn [\n  {\n    json: {\n      rawUpdateId: update.update_id?.toString() || null,\n      interactionId: callbackQuery?.id || update.update_id?.toString() || `${Date.now()}`,\n      chatId: chat.id?.toString() || '',\n      userId: from.id?.toString() || '',\n      username: from.username || null,\n      receivedAt: new Date().toISOString(),\n      type,\n      command,\n      callbackData,\n      messageText: text,\n      authorized: false,\n      payload: {\n        updateId: update.update_id || null,\n        messageId: sourceMessage.message_id || null,\n        callbackQueryId: callbackQuery?.id || null,\n        firstName: from.first_name || null,\n        lastName: from.last_name || null\n      }\n    }\n  }\n];"
+      },
+      "id": "normalize-telegram-update",
+      "name": "Normalize Telegram Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const allowedUsers = ($env.TELEGRAM_ALLOWED_USER_IDS || '')\n  .split(',')\n  .map(x => x.trim())\n  .filter(Boolean);\nconst allowedChats = ($env.TELEGRAM_ALLOWED_CHAT_IDS || '')\n  .split(',')\n  .map(x => x.trim())\n  .filter(Boolean);\n\nreturn items.map(item => {\n  const userAllowed = allowedUsers.length === 0 ? false : allowedUsers.includes(item.json.userId);\n  const chatAllowed = allowedChats.length === 0 ? false : allowedChats.includes(item.json.chatId);\n  item.json.authorized = userAllowed && chatAllowed;\n  item.json.payload.authorization = {\n    userAllowed,\n    chatAllowed\n  };\n  return item;\n});"
+      },
+      "id": "authorize-telegram-interaction",
+      "name": "Authorize Telegram Interaction",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-authorized",
+              "leftValue": "={{ $json.authorized }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-authorized",
+      "name": "Is Authorized?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [780, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"ok\": true }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "ignore-unauthorized",
+      "name": "Ignore Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1040, 180]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "help",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "help"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "choose",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "choose"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "idea",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "idea"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "status"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "callback",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "callback"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "route-interaction",
+      "name": "Route Interaction",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [1040, -80]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'start', responseText: 'Bienvenue dans FamilyOS. Utilise /choose pour préparer le prochain meeting familial.' } }));"
+      },
+      "id": "handle-start",
+      "name": "Handle /start",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, -360]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'help', responseText: 'Commandes MVP: /choose, /idea, /status. Les autres commandes seront ajoutées progressivement.' } }));"
+      },
+      "id": "handle-help",
+      "name": "Handle /help",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, -240]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'choose', responseText: 'Préparons le prochain meeting. Choisis automatique, catégorie, sujet direct ou idées en attente.', nextWorkflow: 'FAMILYOS_01_WEEKLY_PLANNER' } }));"
+      },
+      "id": "handle-choose",
+      "name": "Handle /choose",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, -120]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const ideaText = (item.json.messageText || '').replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  return {\n    json: {\n      ...item.json,\n      route: 'idea',\n      idea: {\n        text: ideaText,\n        author: item.json.username || item.json.userId,\n        source: 'Telegram',\n        status: 'Idea'\n      },\n      responseText: ideaText ? 'Idée ajoutée au backlog FamilyOS.' : 'Ajoute ton idée après la commande, par exemple: /idea Comment transmettre plusieurs langues à notre enfant ?'\n    }\n  };\n});"
+      },
+      "id": "handle-idea",
+      "name": "Handle /idea",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'status', responseText: 'FamilyOS est joignable. Les intégrations Notion, Calendar et Research seront branchées dans les prochaines étapes.' } }));"
+      },
+      "id": "handle-status",
+      "name": "Handle /status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 120]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'callback', responseText: 'Choix reçu. Le traitement sera branché sur le Weekly Planner.' } }));"
+      },
+      "id": "handle-callback",
+      "name": "Handle Callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'unknown', responseText: 'Commande non reconnue. Utilise /help pour voir les commandes disponibles.' } }));"
+      },
+      "id": "handle-unknown",
+      "name": "Handle Unknown",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 360]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, route: $json.route, interactionId: $json.interactionId, responseText: $json.responseText, nextWorkflow: $json.nextWorkflow || null } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "respond-ok",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1620, 0]
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram Update": {
+      "main": [
+        [
+          {
+            "node": "Authorize Telegram Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Authorize Telegram Interaction": {
+      "main": [
+        [
+          {
+            "node": "Is Authorized?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Authorized?": {
+      "main": [
+        [
+          {
+            "node": "Route Interaction",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignore Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Interaction": {
+      "main": [
+        [
+          {
+            "node": "Handle /start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle /help",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle /choose",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle /idea",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle /status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Unknown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle /start": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle /help": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle /choose": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle /idea": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle /status": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Callback": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Unknown": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "FamilyOS"
+    },
+    {
+      "name": "MVP"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-08-13T00:00:00.000Z",
+  "versionId": "familyos-05-telegram-router-skeleton"
+}
+

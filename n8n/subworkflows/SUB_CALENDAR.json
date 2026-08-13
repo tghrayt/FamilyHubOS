@@ -1,0 +1,34 @@
+{
+  "name": "SUB_CALENDAR",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "execute-workflow-trigger",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    action: $json.action || 'create-or-update-event',\n    calendarId: $env.GOOGLE_CALENDAR_ID || null,\n    meeting: $json.meeting || null,\n    calendar: $json.calendar || null,\n    status: 'calendar-skeleton-ready',\n    note: 'Configure Google Calendar credentials and replace this skeleton with Calendar nodes during import/testing.'\n  }\n}];"
+      },
+      "id": "prepare-calendar-operation",
+      "name": "Prepare Calendar Operation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {"main": [[{"node": "Prepare Calendar Operation", "type": "main", "index": 0}]]}
+  },
+  "pinData": {},
+  "settings": {"executionOrder": "v1", "timezone": "Europe/Paris"},
+  "staticData": null,
+  "tags": [{"name": "FamilyOS"}, {"name": "Subworkflow"}],
+  "triggerCount": 1,
+  "updatedAt": "2026-08-13T00:00:00.000Z",
+  "versionId": "familyos-sub-calendar-skeleton"
+}
+

@@ -1,0 +1,90 @@
+{
+  "name": "FAMILYOS_02_RESEARCH",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "execute-workflow-trigger",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const topic = $json.topic;\nconst category = $json.category;\nif (!topic) throw new Error('Research requires topic.');\nif (!category) throw new Error('Research requires category.');\n\nreturn [{\n  json: {\n    topic,\n    category,\n    childContext: $json.childContext || {},\n    familyContext: $json.familyContext || {},\n    queries: [\n      `${topic} recommandations officielles enfant`,\n      `${topic} source fiable pediatrie`,\n      `${topic} universite recherche enfant`\n    ]\n  }\n}];"
+      },
+      "id": "prepare-research-request",
+      "name": "Prepare Research Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SUB_WEB_SEARCH",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "call-web-search",
+      "name": "Call SUB_WEB_SEARCH",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [520, 0],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "SUB_SOURCE_VALIDATOR",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "call-source-validator",
+      "name": "Call SUB_SOURCE_VALIDATOR",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [780, 0],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const validation = $json;\nconst acceptedSources = (validation.sources || []).filter(source => source.accepted);\nconst topic = $('Prepare Research Request').first().json.topic;\nconst category = $('Prepare Research Request').first().json.category;\n\nreturn [{\n  json: {\n    topic,\n    category,\n    whyNow: '',\n    executiveSummary: '',\n    keyPoints: [],\n    sources: acceptedSources.map(source => ({\n      title: source.title,\n      url: source.url,\n      publisher: source.publisher,\n      date: source.publicationDate,\n      readingTimeMinutes: source.readingTimeMinutes || 0,\n      sourceType: source.sourceType,\n      score: source.score\n    })),\n    discussionQuestions: [],\n    practicalIdeas: [],\n    warnings: acceptedSources.length === 0 ? ['Je ne peux pas confirmer cette information à partir de sources suffisamment fiables.'] : []\n  }\n}];"
+      },
+      "id": "build-research-output",
+      "name": "Build Research Output Skeleton",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 0]
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [[{"node": "Prepare Research Request", "type": "main", "index": 0}]]
+    },
+    "Prepare Research Request": {
+      "main": [[{"node": "Call SUB_WEB_SEARCH", "type": "main", "index": 0}]]
+    },
+    "Call SUB_WEB_SEARCH": {
+      "main": [[{"node": "Call SUB_SOURCE_VALIDATOR", "type": "main", "index": 0}]]
+    },
+    "Call SUB_SOURCE_VALIDATOR": {
+      "main": [[{"node": "Build Research Output Skeleton", "type": "main", "index": 0}]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "staticData": null,
+  "tags": [{"name": "FamilyOS"}, {"name": "MVP"}],
+  "triggerCount": 1,
+  "updatedAt": "2026-08-13T00:00:00.000Z",
+  "versionId": "familyos-02-research-skeleton"
+}
+

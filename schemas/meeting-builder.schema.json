@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://familyos.local/schemas/meeting-builder.schema.json",
+  "title": "FamilyOS Meeting Builder Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meeting", "notion", "calendar", "telegramConfirmation"],
+  "properties": {
+    "meeting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "number",
+        "title",
+        "topic",
+        "category",
+        "date",
+        "childAgeLabel",
+        "status",
+        "preparationStatus",
+        "readingTimeMinutes",
+        "sourceCount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "childAgeLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Ready", "Scheduled"]
+        },
+        "preparationStatus": {
+          "type": "string",
+          "enum": ["NotStarted", "InProgress", "Ready", "Skipped"]
+        },
+        "calendarEventId": {
+          "type": ["string", "null"]
+        },
+        "topicPageId": {
+          "type": ["string", "null"]
+        },
+        "readingTimeMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "notion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["properties", "blocks"],
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "calendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "description", "start", "end"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "telegramConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notionUrl": {
+          "type": ["string", "null"],
+          "format": "uri"
+        }
+      }
+    }
+  }
+}
+

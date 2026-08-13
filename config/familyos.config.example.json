@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "FamilyOS",
+    "environment": "production",
+    "language": "fr",
+    "timezone": "Europe/Paris"
+  },
+  "family": {
+    "child": {
+      "birthDate": ""
+    },
+    "preferences": {
+      "sourceLanguages": ["fr", "en"],
+      "tone": "clair, fiable, pratique"
+    }
+  },
+  "meeting": {
+    "day": "monday",
+    "time": "20:30",
+    "durationMinutes": 45,
+    "createPreparationEvent": false,
+    "preparationReminder": {
+      "enabled": true,
+      "offsetHoursBeforeMeeting": 48
+    },
+    "feedbackDelay": {
+      "enabled": true,
+      "offsetHoursAfterMeeting": 2
+    }
+  },
+  "categories": {
+    "allowed": [
+      "developpement",
+      "nutrition",
+      "sante",
+      "culture",
+      "musique",
+      "sciences",
+      "loisirs",
+      "parentalite",
+      "nature",
+      "lecture",
+      "autre"
+    ],
+    "avoidRecentCategoryCount": 3
+  },
+  "research": {
+    "numberOfSources": 5,
+    "maximumReadingTimeMinutes": 30,
+    "sourceScoreThreshold": 5,
+    "minimumAcceptedSources": 2,
+    "allowEnglishSources": true,
+    "strictJsonOutput": true
+  },
+  "sourceScoring": {
+    "positive": {
+      "officialRecommendation": 5,
+      "recognizedHealthAuthority": 5,
+      "university": 4,
+      "scientificStudy": 4,
+      "scientificJournal": 4,
+      "recognizedEducationalOrganization": 3,
+      "qualitySciencePopularization": 2
+    },
+    "negative": {
+      "missingDate": -2,
+      "commercialContent": -3,
+      "unknownAuthor": -3,
+      "noReferences": -4,
+      "medicalClaimWithoutSource": -5
+    }
+  },
+  "telegram": {
+    "useInlineButtons": true,
+    "defaultChoiceTimeoutMinutes": 1440,
+    "commands": [
+      "start",
+      "help",
+      "next",
+      "meeting",
+      "choose",
+      "idea",
+      "history",
+      "decisions",
+      "random",
+      "status"
+    ]
+  },
+  "idempotency": {
+    "meetingIdPrefix": "familyos-meeting",
+    "notificationIdPrefix": "familyos-notification",
+    "calendarEventIdPrefix": "familyos-calendar"
+  }
+}
+
