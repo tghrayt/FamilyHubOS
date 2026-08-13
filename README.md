@@ -23,7 +23,7 @@ Telegram
 
 FamilyOS uses the existing DevOps lab VM:
 
-- k3s on Ubuntu `51.210.40.78`
+- k3s
 - Traefik
 - cert-manager / Let's Encrypt
 - namespace `automation`
