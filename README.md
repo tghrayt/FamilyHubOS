@@ -62,9 +62,9 @@ tests/scenarios/        Manual test scenarios
 The repository includes:
 
 - `.github/workflows/ci.yml`: validates JSON, n8n workflow connections, required files and obvious secret leaks on push/PR.
-- `.github/workflows/sync-n8n.yml`: manual placeholder for future n8n sync. It runs in dry-run mode by default and does not import anything yet.
+- `.github/workflows/sync-n8n.yml`: manual n8n API sync. It runs in dry-run mode by default, then can create/update workflows when `dry_run=false`.
 
-Start with CI only. Enable real n8n sync after the workflows have been imported and tested manually.
+Start with dry-run sync. The workflow does not activate n8n workflows automatically.
 
 ## Secrets
 

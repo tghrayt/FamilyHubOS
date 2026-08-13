@@ -4,7 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Run checks without importing into n8n"
+        description: "Preview sync without changing n8n"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      include_disabled_phase2:
+        description: "Include Phase 2 placeholder workflows"
         required: true
         default: "true"
         type: choice
@@ -14,7 +22,7 @@ on:
 
 jobs:
   sync:
-    name: Prepare n8n sync
+    name: Sync workflows through n8n API
     runs-on: ubuntu-latest
 
     steps:
@@ -28,23 +36,129 @@ jobs:
           import json
           from pathlib import Path
 
-          for path in sorted(Path("n8n").rglob("*.json")):
+          files = sorted(Path("n8n").rglob("*.json"))
+          if not files:
+              raise SystemExit("No n8n workflow files found.")
+
+          for path in files:
               json.loads(path.read_text(encoding="utf-8"))
               print(f"JSON_OK {path}")
           PY
 
-      - name: Dry run summary
-        if: ${{ inputs.dry_run == 'true' }}
+      - name: Sync n8n workflows
         shell: bash
+        env:
+          N8N_URL: ${{ secrets.N8N_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          INCLUDE_DISABLED_PHASE2: ${{ inputs.include_disabled_phase2 }}
         run: |
-          echo "Dry run only. No workflow import was attempted."
-          find n8n -name '*.json' -type f | sort
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
 
-      - name: Stop before real sync
-        if: ${{ inputs.dry_run == 'false' }}
-        shell: bash
-        run: |
-          echo "Real n8n sync is intentionally not implemented yet."
-          echo "Next step: choose API-based import or SSH/pod-based import after testing manually."
-          exit 1
+          dry_run = os.environ.get("DRY_RUN", "true").lower() == "true"
+          include_phase2 = os.environ.get("INCLUDE_DISABLED_PHASE2", "true").lower() == "true"
+          n8n_url = (os.environ.get("N8N_URL") or "").rstrip("/")
+          api_key = os.environ.get("N8N_API_KEY") or ""
+
+          workflow_files = sorted(Path("n8n/subworkflows").glob("*.json"))
+          workflow_files += sorted(Path("n8n/workflows").glob("*.json"))
+
+          if not include_phase2:
+              workflow_files = [
+                  path for path in workflow_files
+                  if path.name != "FAMILYOS_04_FOLLOW_UP.json"
+              ]
+
+          def load_workflow(path):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              return {
+                  "name": data["name"],
+                  "nodes": data.get("nodes", []),
+                  "connections": data.get("connections", {}),
+                  "settings": data.get("settings", {}),
+                  "staticData": data.get("staticData"),
+              }
+
+          payloads = [(path, load_workflow(path)) for path in workflow_files]
+
+          print("Workflow sync plan:")
+          for path, payload in payloads:
+              print(f"- {payload['name']} ({path})")
+
+          if dry_run:
+              print("DRY_RUN=true, no call to n8n was made.")
+              sys.exit(0)
+
+          if not n8n_url:
+              raise SystemExit("Missing GitHub secret N8N_URL.")
+          if not api_key:
+              raise SystemExit("Missing GitHub secret N8N_API_KEY.")
+
+          base_url = f"{n8n_url}/api/v1"
+          headers = {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "X-N8N-API-KEY": api_key,
+          }
+
+          def request(method, path, body=None):
+              url = f"{base_url}{path}"
+              data = None
+              if body is not None:
+                  data = json.dumps(body).encode("utf-8")
+              req = urllib.request.Request(url, data=data, headers=headers, method=method)
+              try:
+                  with urllib.request.urlopen(req, timeout=45) as response:
+                      raw = response.read().decode("utf-8")
+                      return json.loads(raw) if raw else {}
+              except urllib.error.HTTPError as exc:
+                  detail = exc.read().decode("utf-8", errors="replace")
+                  raise RuntimeError(f"{method} {url} failed with {exc.code}: {detail}") from exc
+
+          def list_workflows():
+              workflows = []
+              cursor = None
+              while True:
+                  query = {"limit": "100"}
+                  if cursor:
+                      query["cursor"] = cursor
+                  path = "/workflows?" + urllib.parse.urlencode(query)
+                  page = request("GET", path)
+                  data = page.get("data", page if isinstance(page, list) else [])
+                  workflows.extend(data)
+                  cursor = page.get("nextCursor") if isinstance(page, dict) else None
+                  if not cursor:
+                      break
+              return workflows
+
+          existing_by_name = {
+              workflow.get("name"): workflow
+              for workflow in list_workflows()
+              if workflow.get("name")
+          }
+
+          for path, payload in payloads:
+              existing = existing_by_name.get(payload["name"])
+              if existing:
+                  workflow_id = existing["id"]
+                  try:
+                      request("PATCH", f"/workflows/{workflow_id}", payload)
+                  except RuntimeError as patch_error:
+                      if "failed with 405" not in str(patch_error):
+                          raise
+                      request("PUT", f"/workflows/{workflow_id}", payload)
+                  print(f"UPDATED {payload['name']} ({workflow_id})")
+              else:
+                  created = request("POST", "/workflows", payload)
+                  print(f"CREATED {payload['name']} ({created.get('id', 'unknown-id')})")
+
+          print("SYNC_OK")
+          PY
 

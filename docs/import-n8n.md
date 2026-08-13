@@ -20,7 +20,28 @@ sudo k3s kubectl -n automation get svc n8n-postgres
 
 Do not paste secrets into workflow JSON files.
 
-## Import Order
+## Automatic Import
+
+Preferred method:
+
+```text
+GitHub Actions -> Sync n8n Workflows
+```
+
+The sync workflow uses the n8n public API and repository secrets:
+
+```text
+N8N_URL
+N8N_API_KEY
+```
+
+Run it first with `dry_run = true`.
+
+Then run it with `dry_run = false` to create or update workflows in n8n.
+
+The sync does not activate workflows automatically.
+
+## Manual Import Order
 
 Import subworkflows first:
 
@@ -103,4 +124,3 @@ Expected routes:
 ## Notes
 
 The current workflows are skeletons. Some nodes return JSON instead of sending real Telegram messages or writing to Notion/Calendar. This is intentional for safe import and step-by-step testing.
-

@@ -21,28 +21,47 @@ It validates:
 
 Current behavior:
 
-- `dry_run = true`: lists workflow files only
-- `dry_run = false`: fails intentionally
+- `dry_run = true`: validates and prints the sync plan only
+- `dry_run = false`: creates or updates n8n workflows through the n8n public API
 
-This prevents accidental overwrite or duplication of workflows in the live n8n instance.
+The sync matches workflows by name. Existing workflows are updated, missing workflows are created.
 
-## Future Real Sync
+The sync does not activate workflows automatically.
 
-When manual import is stable, choose one sync method:
+## Required GitHub Secrets
 
-- n8n API import using `N8N_URL` and `N8N_API_KEY`
-- SSH to VM and import through the n8n pod
-
-Required GitHub secrets later:
+Required repository secrets:
 
 ```text
-VM_HOST
-VM_USER
-VM_SSH_KEY
-VM_SSH_PORT
 N8N_URL
 N8N_API_KEY
 ```
 
-Do not add these values to repository files.
+`N8N_URL` must be the base URL of the n8n instance, without a trailing slash.
+
+Example:
+
+```text
+https://n8n.example.com
+```
+
+`N8N_API_KEY` is sent as the `X-N8N-API-KEY` header.
+
+## Recommended First Run
+
+Run the workflow manually with:
+
+```text
+dry_run = true
+include_disabled_phase2 = true
+```
+
+If the plan looks correct, run again with:
+
+```text
+dry_run = false
+include_disabled_phase2 = true
+```
+
+Then check n8n UI before activating any workflow.
 
