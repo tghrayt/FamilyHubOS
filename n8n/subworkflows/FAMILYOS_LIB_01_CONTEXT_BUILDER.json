@@ -10,6 +10,24 @@
       "position": [0, 0]
     },
     {
+      "parameters": {},
+      "id": "manual-test-trigger",
+      "name": "Manual Test Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      testOnly: true,\n      now: '2026-08-14T12:00:00.000Z',\n      child: {\n        birthDate: '2025-12-01'\n      },\n      recentMeetings: [],\n      recentCategories: ['sante', 'culture'],\n      existingTopics: [],\n      openDecisions: [],\n      topicBacklog: [],\n      preferences: {\n        sourceLanguages: ['fr', 'en']\n      }\n    }\n  }\n];"
+      },
+      "id": "build-test-input",
+      "name": "Build Test Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 200]
+    },
+    {
       "parameters": {
         "jsCode": "const input = $json || {};\nconst config = input.config || {};\nconst family = config.family || {};\nconst childConfig = family.child || {};\nconst preferences = {\n  ...(family.preferences || {}),\n  ...(input.preferences || {})\n};\n\nconst birthDate = input.child?.birthDate || childConfig.birthDate;\nif (!birthDate) {\n  throw new Error('Missing child birthDate. Provide config.family.child.birthDate or input.child.birthDate.');\n}\n\nfunction parseDateOnly(value) {\n  const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(value);\n  if (!match) {\n    throw new Error('child birthDate must use YYYY-MM-DD format.');\n  }\n  return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));\n}\n\nfunction calculateAgeMonths(startDate, nowDate) {\n  let months = (nowDate.getUTCFullYear() - startDate.getUTCFullYear()) * 12;\n  months += nowDate.getUTCMonth() - startDate.getUTCMonth();\n  if (nowDate.getUTCDate() < startDate.getUTCDate()) {\n    months -= 1;\n  }\n  return Math.max(0, months);\n}\n\nfunction ageLabelFromMonths(months) {\n  if (months < 12) {\n    return `${months} mois`;\n  }\n  const years = Math.floor(months / 12);\n  const remainingMonths = months % 12;\n  if (remainingMonths === 0) {\n    return years === 1 ? '1 an' : `${years} ans`;\n  }\n  return `${years} an${years > 1 ? 's' : ''} et ${remainingMonths} mois`;\n}\n\nconst now = input.now ? new Date(input.now) : new Date();\nif (Number.isNaN(now.getTime())) {\n  throw new Error('Invalid now date-time.');\n}\n\nconst birth = parseDateOnly(birthDate);\nconst ageMonths = calculateAgeMonths(birth, now);\nconst ageYears = Math.floor(ageMonths / 12);\n\nreturn [\n  {\n    json: {\n      child: {\n        birthDate,\n        ageMonths,\n        ageYears,\n        ageLabel: ageLabelFromMonths(ageMonths)\n      },\n      recentMeetings: input.recentMeetings || [],\n      recentCategories: input.recentCategories || [],\n      existingTopics: input.existingTopics || [],\n      openDecisions: input.openDecisions || [],\n      topicBacklog: input.topicBacklog || [],\n      preferences\n    }\n  }\n];"
       },
@@ -17,11 +35,33 @@
       "name": "Build Family Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [260, 0]
+      "position": [540, 0]
     }
   ],
   "connections": {
     "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Family Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Test Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Test Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Test Input": {
       "main": [
         [
           {
@@ -47,9 +87,9 @@
       "name": "Subworkflow"
     }
   ],
-  "triggerCount": 1,
-  "updatedAt": "2026-08-13T00:00:00.000Z",
-  "versionId": "familyos-sub-context-builder-skeleton"
+  "triggerCount": 2,
+  "updatedAt": "2026-08-14T00:00:00.000Z",
+  "versionId": "familyos-lib-context-builder-test-input"
 }
 
 

@@ -78,8 +78,35 @@ The skeleton only:
 - reads `birthDate`
 - calculates `ageMonths`, `ageYears`, `ageLabel`
 - passes through recent meetings, categories, topics and preferences when provided
+- includes a manual test path with `testOnly = true`
 
 Later, it will load recent meetings and topic backlog from Notion.
+
+## Manual n8n Test
+
+Use the `Manual Test Trigger` path. It injects:
+
+```json
+{
+  "testOnly": true,
+  "now": "2026-08-14T12:00:00.000Z",
+  "child": {
+    "birthDate": "2025-12-01"
+  }
+}
+```
+
+Expected result:
+
+```json
+{
+  "ageMonths": 8,
+  "ageYears": 0,
+  "ageLabel": "8 mois"
+}
+```
+
+The real production path remains `Execute Workflow Trigger -> Build Family Context`.
 
 ## Error Cases
 
