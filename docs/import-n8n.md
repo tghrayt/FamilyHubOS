@@ -41,28 +41,32 @@ Then run it with `dry_run = false` to create or update workflows in n8n.
 
 The sync does not activate workflows automatically.
 
+Workflow names follow `docs/n8n-naming.md` so the n8n interface stays readable.
+
+If old names were already synced once, delete the old workflows manually after the renamed workflows have synced.
+
 ## Manual Import Order
 
 Import subworkflows first:
 
 ```text
-n8n/subworkflows/SUB_CONTEXT_BUILDER.json
-n8n/subworkflows/SUB_WEB_SEARCH.json
-n8n/subworkflows/SUB_SOURCE_VALIDATOR.json
-n8n/subworkflows/SUB_NOTION.json
-n8n/subworkflows/SUB_CALENDAR.json
-n8n/subworkflows/SUB_NOTIFICATION.json
+n8n/subworkflows/FAMILYOS_LIB_01_CONTEXT_BUILDER.json
+n8n/subworkflows/FAMILYOS_LIB_02_WEB_SEARCH.json
+n8n/subworkflows/FAMILYOS_LIB_03_SOURCE_VALIDATOR.json
+n8n/subworkflows/FAMILYOS_LIB_04_NOTION.json
+n8n/subworkflows/FAMILYOS_LIB_05_CALENDAR.json
+n8n/subworkflows/FAMILYOS_LIB_06_NOTIFICATION.json
 ```
 
 Then import main workflows:
 
 ```text
-n8n/workflows/FAMILYOS_05_TELEGRAM_ROUTER.json
-n8n/workflows/FAMILYOS_01_WEEKLY_PLANNER.json
-n8n/workflows/FAMILYOS_02_RESEARCH.json
-n8n/workflows/FAMILYOS_03_MEETING_BUILDER.json
-n8n/workflows/FAMILYOS_04_FOLLOW_UP.json
-n8n/workflows/FAMILYOS_90_ERROR_HANDLER.json
+n8n/workflows/FAMILYOS_MAIN_00_TELEGRAM_ROUTER.json
+n8n/workflows/FAMILYOS_MAIN_01_WEEKLY_PLANNER.json
+n8n/workflows/FAMILYOS_MAIN_02_RESEARCH.json
+n8n/workflows/FAMILYOS_MAIN_03_MEETING_BUILDER.json
+n8n/workflows/FAMILYOS_PHASE2_04_FOLLOW_UP.json
+n8n/workflows/FAMILYOS_MAIN_90_ERROR_HANDLER.json
 ```
 
 ## Environment Variables
@@ -108,7 +112,7 @@ LLM_MODEL
 Start with:
 
 ```text
-FAMILYOS_05_TELEGRAM_ROUTER
+FAMILYOS_MAIN_00_TELEGRAM_ROUTER
 ```
 
 Test the webhook with a sample Telegram update before connecting the real Telegram webhook.
@@ -124,3 +128,4 @@ Expected routes:
 ## Notes
 
 The current workflows are skeletons. Some nodes return JSON instead of sending real Telegram messages or writing to Notion/Calendar. This is intentional for safe import and step-by-step testing.
+

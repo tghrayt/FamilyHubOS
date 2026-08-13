@@ -45,6 +45,16 @@ schemas/                JSON contracts between workflows
 tests/scenarios/        Manual test scenarios
 ```
 
+## n8n Naming
+
+Workflow exports use readable prefixes:
+
+- `FAMILYOS_MAIN_*` for MVP orchestration workflows.
+- `FAMILYOS_LIB_*` for reusable internal workflows.
+- `FAMILYOS_PHASE2_*` for future workflows not enabled in the MVP.
+
+See `docs/n8n-naming.md`.
+
 ## Setup Order
 
 1. Review `IMPLEMENTATION_PLAN.md`.

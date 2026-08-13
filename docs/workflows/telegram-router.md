@@ -1,8 +1,8 @@
-# FAMILYOS_05_TELEGRAM_ROUTER
+# FAMILYOS_MAIN_00_TELEGRAM_ROUTER
 
 ## Purpose
 
-`FAMILYOS_05_TELEGRAM_ROUTER` is the entrypoint for Telegram messages and callbacks.
+`FAMILYOS_MAIN_00_TELEGRAM_ROUTER` is the entrypoint for Telegram messages and callbacks.
 
 It normalizes Telegram updates into the `telegram-interaction.schema.json` contract, checks authorization, then routes commands to the right MVP behavior.
 
@@ -86,7 +86,7 @@ Later iterations will replace or extend the response step with Telegram `sendMes
 
 ## Next Integrations
 
-- `/choose` should call `FAMILYOS_01_WEEKLY_PLANNER`.
+- `/choose` should call `FAMILYOS_MAIN_01_WEEKLY_PLANNER`.
 - `/idea` should create a `Topic` in Notion.
 - callback routes should update conversation state in PostgreSQL database `familyos`.
 - repeated callback interactions should use `idempotency_keys`.
@@ -95,11 +95,12 @@ Later iterations will replace or extend the response step with Telegram `sendMes
 
 Given an authorized user and chat, when `/start` is received, then route is `start`.
 
-Given an authorized user and chat, when `/choose` is received, then route is `choose` and next workflow is `FAMILYOS_01_WEEKLY_PLANNER`.
+Given an authorized user and chat, when `/choose` is received, then route is `choose` and next workflow is `FAMILYOS_MAIN_01_WEEKLY_PLANNER`.
 
 Given an authorized user and chat, when `/idea Texte` is received, then route is `idea` and the idea payload contains `Texte`.
 
 Given an unauthorized user, when any command is received, then no sensitive route information is returned.
 
 Given an authorized callback, when callback data is received, then route is `callback`.
+
 

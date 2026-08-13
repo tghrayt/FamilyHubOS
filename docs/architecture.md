@@ -27,8 +27,8 @@ FamilyOS doit donc s'intégrer à l'infrastructure existante au lieu de créer u
 
 ```mermaid
 flowchart TD
-    Telegram["Telegram Bot"] --> Router["FAMILYOS_05_TELEGRAM_ROUTER"]
-    Schedule["Schedule Trigger"] --> Planner["FAMILYOS_01_WEEKLY_PLANNER"]
+    Telegram["Telegram Bot"] --> Router["FAMILYOS_MAIN_00_TELEGRAM_ROUTER"]
+    Schedule["Schedule Trigger"] --> Planner["FAMILYOS_MAIN_01_WEEKLY_PLANNER"]
     subgraph K3S["VM k3s"]
     subgraph Automation["namespace automation"]
     N8N["n8n existing instance"]
@@ -42,20 +42,20 @@ flowchart TD
     N8N --> Router
     N8N --> Planner
     Router --> Planner
-    Planner --> Context["SUB_CONTEXT_BUILDER"]
-    Planner --> Research["FAMILYOS_02_RESEARCH"]
-    Research --> WebSearch["SUB_WEB_SEARCH"]
-    Research --> Validator["SUB_SOURCE_VALIDATOR"]
+    Planner --> Context["FAMILYOS_LIB_01_CONTEXT_BUILDER"]
+    Planner --> Research["FAMILYOS_MAIN_02_RESEARCH"]
+    Research --> WebSearch["FAMILYOS_LIB_02_WEB_SEARCH"]
+    Research --> Validator["FAMILYOS_LIB_03_SOURCE_VALIDATOR"]
     Research --> LLM["LLM Provider"]
-    Research --> Builder["FAMILYOS_03_MEETING_BUILDER"]
-    Builder --> Notion["SUB_NOTION / Notion"]
-    Builder --> Calendar["SUB_CALENDAR / Google Calendar"]
-    Builder --> Notify["SUB_NOTIFICATION / Telegram"]
+    Research --> Builder["FAMILYOS_MAIN_03_MEETING_BUILDER"]
+    Builder --> Notion["FAMILYOS_LIB_04_NOTION / Notion"]
+    Builder --> Calendar["FAMILYOS_LIB_05_CALENDAR / Google Calendar"]
+    Builder --> Notify["FAMILYOS_LIB_06_NOTIFICATION / Telegram"]
     Planner --> FamilyDb
     Research --> FamilyDb
     Builder --> FamilyDb
     Router --> FamilyDb
-    Planner --> ErrorHandler["FAMILYOS_90_ERROR_HANDLER"]
+    Planner --> ErrorHandler["FAMILYOS_MAIN_90_ERROR_HANDLER"]
     Research --> ErrorHandler
     Builder --> ErrorHandler
     ErrorHandler --> FamilyDb
@@ -169,3 +169,4 @@ sequenceDiagram
 - Reject unauthorized Telegram users and chats before any action.
 - Isolate FamilyOS tables in the `familyos` database and avoid writing into n8n internal tables.
 - Add backup coverage for `familyos` before relying on it for important state.
+

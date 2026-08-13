@@ -1,5 +1,5 @@
 {
-  "name": "FAMILYOS_01_WEEKLY_PLANNER",
+  "name": "FAMILYOS_MAIN_01_WEEKLY_PLANNER",
   "nodes": [
     {
       "parameters": {},
@@ -43,13 +43,13 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "SUB_CONTEXT_BUILDER",
+          "value": "FAMILYOS_LIB_01_CONTEXT_BUILDER",
           "mode": "name"
         },
         "options": {}
       },
       "id": "call-context-builder",
-      "name": "Call SUB_CONTEXT_BUILDER",
+      "name": "Call FAMILYOS_LIB_01_CONTEXT_BUILDER",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [520, 80],
@@ -67,7 +67,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return [{ json: { ok: true, workflow: 'FAMILYOS_01_WEEKLY_PLANNER', proposal: $json.proposal, mode: $json.mode, selectedCategory: $json.selectedCategory, selectedTopic: $json.selectedTopic } }];"
+        "jsCode": "return [{ json: { ok: true, workflow: 'FAMILYOS_MAIN_01_WEEKLY_PLANNER', proposal: $json.proposal, mode: $json.mode, selectedCategory: $json.selectedCategory, selectedTopic: $json.selectedTopic } }];"
       },
       "id": "return-planner-skeleton",
       "name": "Return Planner Skeleton",
@@ -84,9 +84,9 @@
       "main": [[{"node": "Load Planner Input", "type": "main", "index": 0}]]
     },
     "Load Planner Input": {
-      "main": [[{"node": "Call SUB_CONTEXT_BUILDER", "type": "main", "index": 0}]]
+      "main": [[{"node": "Call FAMILYOS_LIB_01_CONTEXT_BUILDER", "type": "main", "index": 0}]]
     },
-    "Call SUB_CONTEXT_BUILDER": {
+    "Call FAMILYOS_LIB_01_CONTEXT_BUILDER": {
       "main": [[{"node": "Build Choice Proposal", "type": "main", "index": 0}]]
     },
     "Build Choice Proposal": {
@@ -104,3 +104,4 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-01-weekly-planner-skeleton"
 }
+

@@ -73,7 +73,7 @@ jobs:
           if not include_phase2:
               workflow_files = [
                   path for path in workflow_files
-                  if path.name != "FAMILYOS_04_FOLLOW_UP.json"
+                  if path.name != "FAMILYOS_PHASE2_04_FOLLOW_UP.json"
               ]
 
           def load_workflow(path):
@@ -161,4 +161,3 @@ jobs:
 
           print("SYNC_OK")
           PY
-

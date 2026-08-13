@@ -1,5 +1,5 @@
 {
-  "name": "FAMILYOS_03_MEETING_BUILDER",
+  "name": "FAMILYOS_MAIN_03_MEETING_BUILDER",
   "nodes": [
     {
       "parameters": {},
@@ -23,13 +23,13 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "SUB_NOTION",
+          "value": "FAMILYOS_LIB_04_NOTION",
           "mode": "name"
         },
         "options": {}
       },
       "id": "call-notion",
-      "name": "Call SUB_NOTION",
+      "name": "Call FAMILYOS_LIB_04_NOTION",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [520, 0],
@@ -39,13 +39,13 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "SUB_CALENDAR",
+          "value": "FAMILYOS_LIB_05_CALENDAR",
           "mode": "name"
         },
         "options": {}
       },
       "id": "call-calendar",
-      "name": "Call SUB_CALENDAR",
+      "name": "Call FAMILYOS_LIB_05_CALENDAR",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [780, 0],
@@ -55,13 +55,13 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "SUB_NOTIFICATION",
+          "value": "FAMILYOS_LIB_06_NOTIFICATION",
           "mode": "name"
         },
         "options": {}
       },
       "id": "call-notification",
-      "name": "Call SUB_NOTIFICATION",
+      "name": "Call FAMILYOS_LIB_06_NOTIFICATION",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.2,
       "position": [1040, 0],
@@ -70,9 +70,9 @@
   ],
   "connections": {
     "Execute Workflow Trigger": {"main": [[{"node": "Build Meeting Payload", "type": "main", "index": 0}]]},
-    "Build Meeting Payload": {"main": [[{"node": "Call SUB_NOTION", "type": "main", "index": 0}]]},
-    "Call SUB_NOTION": {"main": [[{"node": "Call SUB_CALENDAR", "type": "main", "index": 0}]]},
-    "Call SUB_CALENDAR": {"main": [[{"node": "Call SUB_NOTIFICATION", "type": "main", "index": 0}]]}
+    "Build Meeting Payload": {"main": [[{"node": "Call FAMILYOS_LIB_04_NOTION", "type": "main", "index": 0}]]},
+    "Call FAMILYOS_LIB_04_NOTION": {"main": [[{"node": "Call FAMILYOS_LIB_05_CALENDAR", "type": "main", "index": 0}]]},
+    "Call FAMILYOS_LIB_05_CALENDAR": {"main": [[{"node": "Call FAMILYOS_LIB_06_NOTIFICATION", "type": "main", "index": 0}]]}
   },
   "pinData": {},
   "settings": {
@@ -85,3 +85,4 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-03-meeting-builder-skeleton"
 }
+

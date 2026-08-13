@@ -14,4 +14,5 @@ These schemas define the contracts between n8n workflows and sub-workflows.
 
 Workflows should pass structured JSON between steps. Avoid parsing free text with fragile regexes.
 
-If a workflow receives invalid JSON, it should retry or route to `FAMILYOS_90_ERROR_HANDLER`.
+If a workflow receives invalid JSON, it should retry or route to `FAMILYOS_MAIN_90_ERROR_HANDLER`.
+

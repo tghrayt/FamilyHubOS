@@ -1,4 +1,4 @@
-# FAMILYOS_03_MEETING_BUILDER
+# FAMILYOS_MAIN_03_MEETING_BUILDER
 
 ## Purpose
 
@@ -13,7 +13,7 @@ The skeleton:
 - prepares Notion blocks
 - prepares Calendar event content
 - prepares Telegram confirmation text
-- calls `SUB_NOTION`, `SUB_CALENDAR` and `SUB_NOTIFICATION`
+- calls `FAMILYOS_LIB_04_NOTION`, `FAMILYOS_LIB_05_CALENDAR` and `FAMILYOS_LIB_06_NOTIFICATION`
 
 ## Next Implementation
 
@@ -21,4 +21,5 @@ The skeleton:
 - Create/update the Calendar event idempotently.
 - Send Telegram confirmation.
 - Store idempotency keys in PostgreSQL database `familyos`.
+
 

@@ -22,7 +22,7 @@ then the router returns route `help`.
 
 Given an allowed user,
 when `/choose` is sent,
-then the router returns route `choose` and references `FAMILYOS_01_WEEKLY_PLANNER`.
+then the router returns route `choose` and references `FAMILYOS_MAIN_01_WEEKLY_PLANNER`.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,
@@ -35,25 +35,25 @@ then the router returns route `unknown`.
 ## 3. Context builder
 
 Given `birthDate = 2025-12-01` and `now = 2026-08-13T12:00:00.000Z`,
-when `SUB_CONTEXT_BUILDER` runs,
+when `FAMILYOS_LIB_01_CONTEXT_BUILDER` runs,
 then output child age is `8 mois`, `ageMonths = 8`, `ageYears = 0`.
 
 Given no birth date,
-when `SUB_CONTEXT_BUILDER` runs,
+when `FAMILYOS_LIB_01_CONTEXT_BUILDER` runs,
 then it fails explicitly.
 
 ## 4. Source validation
 
 Given a source from `who.int`,
-when `SUB_SOURCE_VALIDATOR` runs,
+when `FAMILYOS_LIB_03_SOURCE_VALIDATOR` runs,
 then it receives a positive official/health authority score.
 
 Given a source with no date and no author,
-when `SUB_SOURCE_VALIDATOR` runs,
+when `FAMILYOS_LIB_03_SOURCE_VALIDATOR` runs,
 then it receives negative scoring signals.
 
 Given no accepted source,
-when `FAMILYOS_02_RESEARCH` builds output,
+when `FAMILYOS_MAIN_02_RESEARCH` builds output,
 then it includes:
 
 ```text
@@ -63,7 +63,7 @@ Je ne peux pas confirmer cette information à partir de sources suffisamment fia
 ## 5. Meeting builder
 
 Given a valid research output,
-when `FAMILYOS_03_MEETING_BUILDER` runs,
+when `FAMILYOS_MAIN_03_MEETING_BUILDER` runs,
 then it creates:
 
 - meeting payload
@@ -96,4 +96,5 @@ Notion : ...
 ## Current Skeleton Limitation
 
 The repository currently prepares importable skeletons. Full live tests require n8n credentials and real integration nodes configured in the n8n UI.
+
 

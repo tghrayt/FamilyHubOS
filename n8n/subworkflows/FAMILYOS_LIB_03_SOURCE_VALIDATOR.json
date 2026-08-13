@@ -1,5 +1,5 @@
 {
-  "name": "SUB_SOURCE_VALIDATOR",
+  "name": "FAMILYOS_LIB_03_SOURCE_VALIDATOR",
   "nodes": [
     {
       "parameters": {},
@@ -31,4 +31,5 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-sub-source-validator-skeleton"
 }
+
 

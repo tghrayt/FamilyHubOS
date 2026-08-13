@@ -1,5 +1,5 @@
 {
-  "name": "FAMILYOS_90_ERROR_HANDLER",
+  "name": "FAMILYOS_MAIN_90_ERROR_HANDLER",
   "nodes": [
     {
       "parameters": {},
@@ -23,7 +23,7 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "SUB_NOTIFICATION",
+          "value": "FAMILYOS_LIB_06_NOTIFICATION",
           "mode": "name"
         },
         "options": {}
@@ -51,4 +51,5 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-90-error-handler-skeleton"
 }
+
 

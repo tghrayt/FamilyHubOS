@@ -4,7 +4,7 @@
 
 Prefer several small workflows over one monolithic workflow. For V1, create only the workflows required for the end-to-end MVP.
 
-## FAMILYOS_01_WEEKLY_PLANNER
+## FAMILYOS_MAIN_01_WEEKLY_PLANNER
 
 Purpose : start weekly planning and collect parent choice.
 
@@ -29,7 +29,7 @@ Main steps :
 Skeleton export :
 
 ```text
-n8n/workflows/FAMILYOS_01_WEEKLY_PLANNER.json
+n8n/workflows/FAMILYOS_MAIN_01_WEEKLY_PLANNER.json
 ```
 
 Detailed spec :
@@ -44,7 +44,7 @@ Modes :
 - Forced category.
 - Forced topic.
 
-## FAMILYOS_02_RESEARCH
+## FAMILYOS_MAIN_02_RESEARCH
 
 Input :
 
@@ -62,7 +62,7 @@ Purpose : find, normalize and validate sources, then produce structured research
 Skeleton export :
 
 ```text
-n8n/workflows/FAMILYOS_02_RESEARCH.json
+n8n/workflows/FAMILYOS_MAIN_02_RESEARCH.json
 ```
 
 Detailed spec :
@@ -78,14 +78,14 @@ Rules :
 - Return strict JSON.
 - Explicitly state when information cannot be confirmed.
 
-## FAMILYOS_03_MEETING_BUILDER
+## FAMILYOS_MAIN_03_MEETING_BUILDER
 
 Purpose : convert research output into a Notion-ready meeting page and Calendar-ready event payload.
 
 Skeleton export :
 
 ```text
-n8n/workflows/FAMILYOS_03_MEETING_BUILDER.json
+n8n/workflows/FAMILYOS_MAIN_03_MEETING_BUILDER.json
 ```
 
 Detailed spec :
@@ -111,13 +111,13 @@ Output includes :
 - Review section.
 - Sources section.
 
-## FAMILYOS_04_FOLLOW_UP
+## FAMILYOS_PHASE2_04_FOLLOW_UP
 
 Purpose : phase 2 workflow for decisions with `ReviewAt`.
 
 Not part of the MVP.
 
-## FAMILYOS_05_TELEGRAM_ROUTER
+## FAMILYOS_MAIN_00_TELEGRAM_ROUTER
 
 Purpose : receive Telegram commands and callbacks, enforce authorization, and route to the right workflow.
 
@@ -145,7 +145,7 @@ MVP commands :
 Skeleton export :
 
 ```text
-n8n/workflows/FAMILYOS_05_TELEGRAM_ROUTER.json
+n8n/workflows/FAMILYOS_MAIN_00_TELEGRAM_ROUTER.json
 ```
 
 Detailed spec :
@@ -154,7 +154,7 @@ Detailed spec :
 docs/workflows/telegram-router.md
 ```
 
-## FAMILYOS_90_ERROR_HANDLER
+## FAMILYOS_MAIN_90_ERROR_HANDLER
 
 Purpose : centralize error logging, retry decisions and admin notification.
 
@@ -179,21 +179,21 @@ Never log :
 
 ## Recommended Sub-Workflows
 
-- `SUB_CONTEXT_BUILDER`
-- `SUB_WEB_SEARCH`
-- `SUB_SOURCE_VALIDATOR`
-- `SUB_NOTION`
-- `SUB_CALENDAR`
-- `SUB_NOTIFICATION`
+- `FAMILYOS_LIB_01_CONTEXT_BUILDER`
+- `FAMILYOS_LIB_02_WEB_SEARCH`
+- `FAMILYOS_LIB_03_SOURCE_VALIDATOR`
+- `FAMILYOS_LIB_04_NOTION`
+- `FAMILYOS_LIB_05_CALENDAR`
+- `FAMILYOS_LIB_06_NOTIFICATION`
 
 For V1, create only the sub-workflows that reduce duplication immediately.
 
-### SUB_CONTEXT_BUILDER
+### FAMILYOS_LIB_01_CONTEXT_BUILDER
 
 Skeleton export :
 
 ```text
-n8n/subworkflows/SUB_CONTEXT_BUILDER.json
+n8n/subworkflows/FAMILYOS_LIB_01_CONTEXT_BUILDER.json
 ```
 
 Detailed spec :
@@ -215,3 +215,4 @@ Stable keys :
 - `notionPageId`
 
 Retries must not create duplicate Notion pages, Calendar events or Telegram notifications.
+

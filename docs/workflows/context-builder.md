@@ -1,8 +1,8 @@
-# SUB_CONTEXT_BUILDER
+# FAMILYOS_LIB_01_CONTEXT_BUILDER
 
 ## Purpose
 
-`SUB_CONTEXT_BUILDER` builds the standard context passed to FamilyOS planning and research workflows.
+`FAMILYOS_LIB_01_CONTEXT_BUILDER` builds the standard context passed to FamilyOS planning and research workflows.
 
 It calculates child age dynamically from `birthDate`. Age must not be manually stored as source truth.
 
@@ -102,4 +102,5 @@ Given `birthDate = 2025-12-01` and `now = 2026-08-13T12:00:00.000Z`, output age 
 Given no birth date, the workflow fails explicitly.
 
 Given an invalid birth date format, the workflow fails explicitly.
+
 

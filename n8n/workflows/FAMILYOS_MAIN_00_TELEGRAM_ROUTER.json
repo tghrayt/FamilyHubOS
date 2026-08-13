@@ -1,5 +1,5 @@
 {
-  "name": "FAMILYOS_05_TELEGRAM_ROUTER",
+  "name": "FAMILYOS_MAIN_00_TELEGRAM_ROUTER",
   "nodes": [
     {
       "parameters": {
@@ -248,7 +248,7 @@
     },
     {
       "parameters": {
-        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'choose', responseText: 'Préparons le prochain meeting. Choisis automatique, catégorie, sujet direct ou idées en attente.', nextWorkflow: 'FAMILYOS_01_WEEKLY_PLANNER' } }));"
+        "jsCode": "return items.map(item => ({ json: { ...item.json, route: 'choose', responseText: 'Préparons le prochain meeting. Choisis automatique, catégorie, sujet direct ou idées en attente.', nextWorkflow: 'FAMILYOS_MAIN_01_WEEKLY_PLANNER' } }));"
       },
       "id": "handle-choose",
       "name": "Handle /choose",
@@ -512,4 +512,5 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-05-telegram-router-skeleton"
 }
+
 

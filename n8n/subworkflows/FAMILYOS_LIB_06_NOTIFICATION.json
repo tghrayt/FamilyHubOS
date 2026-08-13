@@ -1,5 +1,5 @@
 {
-  "name": "SUB_NOTIFICATION",
+  "name": "FAMILYOS_LIB_06_NOTIFICATION",
   "nodes": [
     {
       "parameters": {},
@@ -31,4 +31,5 @@
   "updatedAt": "2026-08-13T00:00:00.000Z",
   "versionId": "familyos-sub-notification-skeleton"
 }
+
 

@@ -85,19 +85,19 @@ FamilyHubOS/
     familyos.config.example.json
   n8n/
     workflows/
-      FAMILYOS_01_WEEKLY_PLANNER.json
-      FAMILYOS_02_RESEARCH.json
-      FAMILYOS_03_MEETING_BUILDER.json
-      FAMILYOS_04_FOLLOW_UP.json
-      FAMILYOS_05_TELEGRAM_ROUTER.json
-      FAMILYOS_90_ERROR_HANDLER.json
+      FAMILYOS_MAIN_01_WEEKLY_PLANNER.json
+      FAMILYOS_MAIN_02_RESEARCH.json
+      FAMILYOS_MAIN_03_MEETING_BUILDER.json
+      FAMILYOS_PHASE2_04_FOLLOW_UP.json
+      FAMILYOS_MAIN_00_TELEGRAM_ROUTER.json
+      FAMILYOS_MAIN_90_ERROR_HANDLER.json
     subworkflows/
-      SUB_CONTEXT_BUILDER.json
-      SUB_WEB_SEARCH.json
-      SUB_SOURCE_VALIDATOR.json
-      SUB_NOTION.json
-      SUB_CALENDAR.json
-      SUB_NOTIFICATION.json
+      FAMILYOS_LIB_01_CONTEXT_BUILDER.json
+      FAMILYOS_LIB_02_WEB_SEARCH.json
+      FAMILYOS_LIB_03_SOURCE_VALIDATOR.json
+      FAMILYOS_LIB_04_NOTION.json
+      FAMILYOS_LIB_05_CALENDAR.json
+      FAMILYOS_LIB_06_NOTIFICATION.json
   infrastructure/
     k8s/
       README.md
@@ -229,7 +229,7 @@ Objectif : router les commandes et callbacks Telegram.
 
 Modifications prévues :
 
-- Créer `FAMILYOS_05_TELEGRAM_ROUTER`.
+- Créer `FAMILYOS_MAIN_00_TELEGRAM_ROUTER`.
 - Ajouter allowlist `TELEGRAM_ALLOWED_USER_IDS` et `TELEGRAM_ALLOWED_CHAT_IDS`.
 
 Test :
@@ -241,24 +241,24 @@ Test :
 
 Résultat :
 
-- `n8n/workflows/FAMILYOS_05_TELEGRAM_ROUTER.json` fournit un routeur Telegram n8n sans credentials.
+- `n8n/workflows/FAMILYOS_MAIN_00_TELEGRAM_ROUTER.json` fournit un routeur Telegram n8n sans credentials.
 - `docs/workflows/telegram-router.md` documente le comportement attendu et les scénarios de test.
 
 ### Step 6 - Weekly planner MVP
 
-Prerequisite completed : `SUB_CONTEXT_BUILDER` skeleton.
+Prerequisite completed : `FAMILYOS_LIB_01_CONTEXT_BUILDER` skeleton.
 
 Added :
 
 - `schemas/family-context.schema.json`
-- `n8n/subworkflows/SUB_CONTEXT_BUILDER.json`
+- `n8n/subworkflows/FAMILYOS_LIB_01_CONTEXT_BUILDER.json`
 - `docs/workflows/context-builder.md`
 
 Objectif : proposer catégorie/sujet/automatique.
 
 Modifications prévues :
 
-- Créer `FAMILYOS_01_WEEKLY_PLANNER`.
+- Créer `FAMILYOS_MAIN_01_WEEKLY_PLANNER`.
 - Charger contexte familial minimal.
 - Envoyer boutons Telegram.
 
@@ -274,9 +274,9 @@ Objectif : rechercher et valider des sources.
 
 Modifications prévues :
 
-- Créer `FAMILYOS_02_RESEARCH`.
-- Créer `SUB_WEB_SEARCH`.
-- Créer `SUB_SOURCE_VALIDATOR`.
+- Créer `FAMILYOS_MAIN_02_RESEARCH`.
+- Créer `FAMILYOS_LIB_02_WEB_SEARCH`.
+- Créer `FAMILYOS_LIB_03_SOURCE_VALIDATOR`.
 - Ajouter schéma JSON strict.
 
 Test :
@@ -292,7 +292,7 @@ Objectif : générer une fiche meeting fiable et lisible.
 
 Modifications prévues :
 
-- Créer `FAMILYOS_03_MEETING_BUILDER`.
+- Créer `FAMILYOS_MAIN_03_MEETING_BUILDER`.
 - Produire une structure compatible Notion.
 
 Test :
@@ -306,8 +306,8 @@ Objectif : créer la page Notion et l'événement Calendar sans doublon.
 
 Modifications prévues :
 
-- Créer `SUB_NOTION`.
-- Créer `SUB_CALENDAR`.
+- Créer `FAMILYOS_LIB_04_NOTION`.
+- Créer `FAMILYOS_LIB_05_CALENDAR`.
 - Ajouter idempotency keys.
 
 Test :
@@ -348,3 +348,4 @@ Files prepared :
 - Calendrier Google cible.
 - Stratégie de backup pour la base `familyos` dans `n8n-postgres`.
 - Méthode exacte de création de la base `familyos` dans le PostgreSQL existant.
+
