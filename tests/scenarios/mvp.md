@@ -49,7 +49,7 @@ then the workflow returns route `callback` and sends 3 suggested topic buttons.
 
 Given an allowed user,
 when a suggested topic button is clicked,
-then the workflow confirms the selected topic.
+then the workflow sends a draft meeting preview with topic, category, age, discussion questions and a clear non-sourced status.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,
