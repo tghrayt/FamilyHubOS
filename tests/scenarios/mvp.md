@@ -45,7 +45,11 @@ then the workflow returns route `choose` and sends inline category buttons.
 
 Given an allowed user,
 when the `Sciences` category button is clicked,
-then the workflow returns route `callback` and confirms `Sciences`.
+then the workflow returns route `callback` and sends 3 suggested topic buttons.
+
+Given an allowed user,
+when a suggested topic button is clicked,
+then the workflow confirms the selected topic.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,

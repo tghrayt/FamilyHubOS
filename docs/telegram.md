@@ -55,8 +55,9 @@ Flow :
 1. `/choose` sends inline category buttons.
 2. Parent clicks a category.
 3. Telegram sends a callback query to the same webhook.
-4. FamilyHubOS confirms the selected category.
-5. Topic generation will be added later.
+4. FamilyHubOS sends 3 suggested topic buttons.
+5. Parent clicks a topic.
+6. FamilyHubOS confirms the selected topic.
 
 Main buttons :
 
@@ -100,7 +101,7 @@ Example :
 
 ```text
 familyhubos:choose:category:science:v1
-familyhubos:topic:selected:<topicId>:v1
+familyhubos:topic:<categoryId>:<topicId>:v1
 familyhubos:auto:v1
 ```
 
