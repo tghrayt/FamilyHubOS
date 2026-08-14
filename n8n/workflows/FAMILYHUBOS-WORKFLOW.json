@@ -132,7 +132,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst command = input.telegram?.command || null;\nconst text = input.telegram?.messageText || '';\nconst callbackData = input.telegram?.callbackData || '';\nconst categories = [\n  { id: 'developpement', label: 'Développement' },\n  { id: 'nutrition', label: 'Nutrition' },\n  { id: 'sante', label: 'Santé' },\n  { id: 'culture', label: 'Culture' },\n  { id: 'musique', label: 'Musique' },\n  { id: 'sciences', label: 'Sciences' },\n  { id: 'loisirs', label: 'Loisirs' },\n  { id: 'parentalite', label: 'Parentalité' },\n  { id: 'nature', label: 'Nature' },\n  { id: 'lecture', label: 'Lecture' }\n];\nconst topicSuggestions = {\n  developpement: [\n    { id: 'motricite', label: 'Motricité et exploration', topic: 'Comment accompagner la motricité et l’exploration libre ?' },\n    { id: 'langage', label: 'Langage au quotidien', topic: 'Comment stimuler le langage dans les routines familiales ?' },\n    { id: 'sommeil-dev', label: 'Rythmes et développement', topic: 'Quel lien entre sommeil, rythme et développement ?' }\n  ],\n  nutrition: [\n    { id: 'diversification', label: 'Diversification alimentaire', topic: 'Comment construire une diversification alimentaire sereine ?' },\n    { id: 'textures', label: 'Textures et autonomie', topic: 'Comment introduire textures et autonomie à table ?' },\n    { id: 'repas-famille', label: 'Repas en famille', topic: 'Comment rendre les repas familiaux plus apaisés ?' }\n  ],\n  sante: [\n    { id: 'sommeil', label: 'Sommeil', topic: 'Comment comprendre les réveils nocturnes et le sommeil ?' },\n    { id: 'prevention', label: 'Prévention', topic: 'Quels repères de prévention santé suivre cette saison ?' },\n    { id: 'motricite-sante', label: 'Motricité et sécurité', topic: 'Comment sécuriser l’exploration sans trop limiter ?' }\n  ],\n  culture: [\n    { id: 'rituels', label: 'Rituels familiaux', topic: 'Quels rituels culturels transmettre en famille ?' },\n    { id: 'langues', label: 'Langues familiales', topic: 'Comment transmettre plusieurs langues naturellement ?' },\n    { id: 'histoires', label: 'Histoires et mémoire', topic: 'Comment raconter l’histoire familiale à un enfant ?' }\n  ],\n  musique: [\n    { id: 'eveil-musical', label: 'Éveil musical', topic: 'Quels effets de l’éveil musical chez le jeune enfant ?' },\n    { id: 'chants', label: 'Chants et routines', topic: 'Comment utiliser les chansons dans les routines ?' },\n    { id: 'instruments', label: 'Premiers instruments', topic: 'Quels instruments simples proposer à la maison ?' }\n  ],\n  sciences: [\n    { id: 'curiosite', label: 'Curiosité scientifique', topic: 'Comment développer la curiosité scientifique dès le plus jeune âge ?' },\n    { id: 'nature-science', label: 'Observer la nature', topic: 'Comment transformer les sorties nature en découverte scientifique ?' },\n    { id: 'cause-effet', label: 'Cause et effet', topic: 'Comment aider un enfant à explorer les liens de cause à effet ?' }\n  ],\n  loisirs: [\n    { id: 'jeu-libre', label: 'Jeu libre', topic: 'Pourquoi le jeu libre est-il important ?' },\n    { id: 'sorties', label: 'Sorties simples', topic: 'Quelles sorties simples nourrissent l’attention et la curiosité ?' },\n    { id: 'ecrans', label: 'Alternatives aux écrans', topic: 'Quelles alternatives concrètes aux écrans proposer ?' }\n  ],\n  parentalite: [\n    { id: 'cadre', label: 'Cadre sécurisant', topic: 'Comment poser un cadre sécurisant sans rigidité ?' },\n    { id: 'fatigue', label: 'Fatigue parentale', topic: 'Comment préserver l’énergie parentale dans le quotidien ?' },\n    { id: 'communication', label: 'Communication parentale', topic: 'Comment mieux se coordonner entre parents ?' }\n  ],\n  nature: [\n    { id: 'dehors', label: 'Temps dehors', topic: 'Quels bénéfices du temps dehors pour un enfant ?' },\n    { id: 'saisons', label: 'Saisons', topic: 'Comment faire découvrir les saisons simplement ?' },\n    { id: 'sensoriel', label: 'Exploration sensorielle', topic: 'Comment proposer une exploration sensorielle de la nature ?' }\n  ],\n  lecture: [\n    { id: 'albums', label: 'Albums jeunesse', topic: 'Comment choisir des albums adaptés à l’âge ?' },\n    { id: 'lecture-rituel', label: 'Rituel lecture', topic: 'Comment installer un rituel lecture sans pression ?' },\n    { id: 'imagier', label: 'Imagiers', topic: 'Comment utiliser les imagiers pour enrichir le langage ?' }\n  ]\n};\nconst categoryById = Object.fromEntries(categories.map(category => [category.id, category]));\nlet route = input.telegram?.type === 'callback' ? 'callback' : command || 'unknown';\nlet responseText = 'FamilyHubOS est prêt.';\nlet selectedTopic = input.selectedTopic || null;\nlet selectedTopicId = input.selectedTopicId || null;\nlet selectedCategory = input.selectedCategory || null;\nlet telegramReplyMarkup = null;\n\nfunction categoryKeyboard() {\n  const rows = [];\n  for (let index = 0; index < categories.length; index += 2) {\n    rows.push(categories.slice(index, index + 2).map(category => ({\n      text: category.label,\n      callback_data: `familyhubos:choose:category:${category.id}:v1`\n    })));\n  }\n  rows.unshift([{ text: 'Laisser FamilyHubOS proposer', callback_data: 'familyhubos:choose:auto:v1' }]);\n  return { inline_keyboard: rows };\n}\n\nfunction topicKeyboard(categoryId) {\n  const suggestions = topicSuggestions[categoryId] || topicSuggestions.sciences;\n  return {\n    inline_keyboard: suggestions.map(suggestion => [{\n      text: suggestion.label,\n      callback_data: `familyhubos:topic:${categoryId}:${suggestion.id}:v1`\n    }])\n  };\n}\n\nfunction findTopic(categoryId, topicId) {\n  return (topicSuggestions[categoryId] || []).find(suggestion => suggestion.id === topicId) || null;\n}\n\nif (route === 'callback') {\n  const parts = callbackData.split(':');\n  if (parts[0] === 'familyhubos' && parts[1] === 'choose' && parts[2] === 'category') {\n    selectedCategory = parts[3] || null;\n    const label = categoryById[selectedCategory]?.label || selectedCategory || 'inconnue';\n    responseText = `Catégorie choisie: ${label}. Choisis maintenant un sujet.`;\n    telegramReplyMarkup = topicKeyboard(selectedCategory);\n  } else if (callbackData === 'familyhubos:choose:auto:v1') {\n    selectedCategory = 'sciences';\n    responseText = 'Mode automatique choisi. Voici 3 sujets proposés pour cette semaine.';\n    telegramReplyMarkup = topicKeyboard(selectedCategory);\n  } else if (parts[0] === 'familyhubos' && parts[1] === 'topic') {\n    selectedCategory = parts[2] || null;\n    selectedTopicId = parts[3] || null;\n    const topic = findTopic(selectedCategory, selectedTopicId);\n    selectedTopic = topic?.topic || selectedTopicId;\n    responseText = `Fiche meeting brouillon\n\nSujet: ${selectedTopic}\nCatégorie: ${categoryById[selectedCategory]?.label || selectedCategory}\nÂge: ${input.familyContext.child.ageLabel}\n\nPourquoi maintenant:\nSujet adapté au contexte actuel de l’enfant.\n\nQuestions pour le meeting:\n1. Qu’est-ce qu’on veut comprendre ?\n2. Qu’est-ce qu’on observe déjà à la maison ?\n3. Quelle petite action tester cette semaine ?\n\nStatut: brouillon non sourcé.`;\n    telegramReplyMarkup = {\n      inline_keyboard: [\n        [{ text: 'Valider ce sujet', callback_data: `familyhubos:approve:${selectedCategory}:${selectedTopicId}:v1` }],\n        [{ text: 'Changer de catégorie', callback_data: 'familyhubos:back:categories:v1' }]\n      ]\n    };\n  } else if (parts[0] === 'familyhubos' && parts[1] === 'approve') {\n    selectedCategory = parts[2] || null;\n    selectedTopicId = parts[3] || null;\n    const topic = findTopic(selectedCategory, selectedTopicId);\n    selectedTopic = topic?.topic || selectedTopicId;\n    responseText = `Sujet validé\\n\\n${selectedTopic}\\n\\nJe suis prêt à créer la page Notion dès que la connexion Notion sera configurée.`;\n  } else if (callbackData === 'familyhubos:back:categories:v1') {\n    responseText = 'Choisis une catégorie pour le prochain meeting familial.';\n    telegramReplyMarkup = categoryKeyboard();\n  } else {\n    responseText = 'Choix reçu, mais pas encore pris en charge.';\n  }\n}\n\nif (route === 'start') responseText = 'Bienvenue dans FamilyHubOS. Utilise /choose pour préparer le prochain meeting familial.';\nif (route === 'help') responseText = 'Commandes disponibles: /start, /help, /status, /choose, /idea.';\nif (route === 'status') responseText = `FamilyHubOS fonctionne. Âge calculé: ${input.familyContext.child.ageLabel}.`;\nif (route === 'choose') {\n  responseText = 'Choisis une catégorie pour le prochain meeting familial.';\n  telegramReplyMarkup = categoryKeyboard();\n}\nif (route === 'idea') {\n  selectedTopic = text.replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  responseText = selectedTopic ? `Idée reçue: ${selectedTopic}` : 'Ajoute ton idée après /idea.';\n}\n\nreturn [{\n  json: {\n    ...input,\n    route,\n    selectedCategory,\n    selectedTopicId,\n    selectedTopic,\n    telegramReplyMarkup,\n    planning: {\n      categories,\n      responseText\n    }\n  }\n}];"
+        "jsCode": "const input = $json;\nconst command = input.telegram?.command || null;\nconst text = input.telegram?.messageText || '';\nconst callbackData = input.telegram?.callbackData || '';\nconst categories = [\n  { id: 'developpement', label: 'Développement' },\n  { id: 'nutrition', label: 'Nutrition' },\n  { id: 'sante', label: 'Santé' },\n  { id: 'culture', label: 'Culture' },\n  { id: 'musique', label: 'Musique' },\n  { id: 'sciences', label: 'Sciences' },\n  { id: 'loisirs', label: 'Loisirs' },\n  { id: 'parentalite', label: 'Parentalité' },\n  { id: 'nature', label: 'Nature' },\n  { id: 'lecture', label: 'Lecture' }\n];\nconst topicSuggestions = {\n  developpement: [\n    { id: 'motricite', label: 'Motricité et exploration', topic: 'Comment accompagner la motricité et l’exploration libre ?' },\n    { id: 'langage', label: 'Langage au quotidien', topic: 'Comment stimuler le langage dans les routines familiales ?' },\n    { id: 'sommeil-dev', label: 'Rythmes et développement', topic: 'Quel lien entre sommeil, rythme et développement ?' }\n  ],\n  nutrition: [\n    { id: 'diversification', label: 'Diversification alimentaire', topic: 'Comment construire une diversification alimentaire sereine ?' },\n    { id: 'textures', label: 'Textures et autonomie', topic: 'Comment introduire textures et autonomie à table ?' },\n    { id: 'repas-famille', label: 'Repas en famille', topic: 'Comment rendre les repas familiaux plus apaisés ?' }\n  ],\n  sante: [\n    { id: 'sommeil', label: 'Sommeil', topic: 'Comment comprendre les réveils nocturnes et le sommeil ?' },\n    { id: 'prevention', label: 'Prévention', topic: 'Quels repères de prévention santé suivre cette saison ?' },\n    { id: 'motricite-sante', label: 'Motricité et sécurité', topic: 'Comment sécuriser l’exploration sans trop limiter ?' }\n  ],\n  culture: [\n    { id: 'rituels', label: 'Rituels familiaux', topic: 'Quels rituels culturels transmettre en famille ?' },\n    { id: 'langues', label: 'Langues familiales', topic: 'Comment transmettre plusieurs langues naturellement ?' },\n    { id: 'histoires', label: 'Histoires et mémoire', topic: 'Comment raconter l’histoire familiale à un enfant ?' }\n  ],\n  musique: [\n    { id: 'eveil-musical', label: 'Éveil musical', topic: 'Quels effets de l’éveil musical chez le jeune enfant ?' },\n    { id: 'chants', label: 'Chants et routines', topic: 'Comment utiliser les chansons dans les routines ?' },\n    { id: 'instruments', label: 'Premiers instruments', topic: 'Quels instruments simples proposer à la maison ?' }\n  ],\n  sciences: [\n    { id: 'curiosite', label: 'Curiosité scientifique', topic: 'Comment développer la curiosité scientifique dès le plus jeune âge ?' },\n    { id: 'nature-science', label: 'Observer la nature', topic: 'Comment transformer les sorties nature en découverte scientifique ?' },\n    { id: 'cause-effet', label: 'Cause et effet', topic: 'Comment aider un enfant à explorer les liens de cause à effet ?' }\n  ],\n  loisirs: [\n    { id: 'jeu-libre', label: 'Jeu libre', topic: 'Pourquoi le jeu libre est-il important ?' },\n    { id: 'sorties', label: 'Sorties simples', topic: 'Quelles sorties simples nourrissent l’attention et la curiosité ?' },\n    { id: 'ecrans', label: 'Alternatives aux écrans', topic: 'Quelles alternatives concrètes aux écrans proposer ?' }\n  ],\n  parentalite: [\n    { id: 'cadre', label: 'Cadre sécurisant', topic: 'Comment poser un cadre sécurisant sans rigidité ?' },\n    { id: 'fatigue', label: 'Fatigue parentale', topic: 'Comment préserver l’énergie parentale dans le quotidien ?' },\n    { id: 'communication', label: 'Communication parentale', topic: 'Comment mieux se coordonner entre parents ?' }\n  ],\n  nature: [\n    { id: 'dehors', label: 'Temps dehors', topic: 'Quels bénéfices du temps dehors pour un enfant ?' },\n    { id: 'saisons', label: 'Saisons', topic: 'Comment faire découvrir les saisons simplement ?' },\n    { id: 'sensoriel', label: 'Exploration sensorielle', topic: 'Comment proposer une exploration sensorielle de la nature ?' }\n  ],\n  lecture: [\n    { id: 'albums', label: 'Albums jeunesse', topic: 'Comment choisir des albums adaptés à l’âge ?' },\n    { id: 'lecture-rituel', label: 'Rituel lecture', topic: 'Comment installer un rituel lecture sans pression ?' },\n    { id: 'imagier', label: 'Imagiers', topic: 'Comment utiliser les imagiers pour enrichir le langage ?' }\n  ]\n};\nconst categoryById = Object.fromEntries(categories.map(category => [category.id, category]));\nlet route = input.telegram?.type === 'callback' ? 'callback' : command || 'unknown';\nlet responseText = 'FamilyHubOS est prêt.';\nlet selectedTopic = input.selectedTopic || null;\nlet selectedTopicId = input.selectedTopicId || null;\nlet selectedCategory = input.selectedCategory || null;\nlet telegramReplyMarkup = null;\nlet createNotionPage = false;\n\nfunction categoryKeyboard() {\n  const rows = [];\n  for (let index = 0; index < categories.length; index += 2) {\n    rows.push(categories.slice(index, index + 2).map(category => ({\n      text: category.label,\n      callback_data: `familyhubos:choose:category:${category.id}:v1`\n    })));\n  }\n  rows.unshift([{ text: 'Laisser FamilyHubOS proposer', callback_data: 'familyhubos:choose:auto:v1' }]);\n  return { inline_keyboard: rows };\n}\n\nfunction topicKeyboard(categoryId) {\n  const suggestions = topicSuggestions[categoryId] || topicSuggestions.sciences;\n  return {\n    inline_keyboard: suggestions.map(suggestion => [{\n      text: suggestion.label,\n      callback_data: `familyhubos:topic:${categoryId}:${suggestion.id}:v1`\n    }])\n  };\n}\n\nfunction findTopic(categoryId, topicId) {\n  return (topicSuggestions[categoryId] || []).find(suggestion => suggestion.id === topicId) || null;\n}\n\nif (route === 'callback') {\n  const parts = callbackData.split(':');\n  if (parts[0] === 'familyhubos' && parts[1] === 'choose' && parts[2] === 'category') {\n    selectedCategory = parts[3] || null;\n    const label = categoryById[selectedCategory]?.label || selectedCategory || 'inconnue';\n    responseText = `Catégorie choisie: ${label}. Choisis maintenant un sujet.`;\n    telegramReplyMarkup = topicKeyboard(selectedCategory);\n  } else if (callbackData === 'familyhubos:choose:auto:v1') {\n    selectedCategory = 'sciences';\n    responseText = 'Mode automatique choisi. Voici 3 sujets proposés pour cette semaine.';\n    telegramReplyMarkup = topicKeyboard(selectedCategory);\n  } else if (parts[0] === 'familyhubos' && parts[1] === 'topic') {\n    selectedCategory = parts[2] || null;\n    selectedTopicId = parts[3] || null;\n    const topic = findTopic(selectedCategory, selectedTopicId);\n    selectedTopic = topic?.topic || selectedTopicId;\n    responseText = `Fiche meeting brouillon\n\nSujet: ${selectedTopic}\nCatégorie: ${categoryById[selectedCategory]?.label || selectedCategory}\nÂge: ${input.familyContext.child.ageLabel}\n\nPourquoi maintenant:\nSujet adapté au contexte actuel de l’enfant.\n\nQuestions pour le meeting:\n1. Qu’est-ce qu’on veut comprendre ?\n2. Qu’est-ce qu’on observe déjà à la maison ?\n3. Quelle petite action tester cette semaine ?\n\nStatut: brouillon non sourcé.`;\n    telegramReplyMarkup = {\n      inline_keyboard: [\n        [{ text: 'Valider ce sujet', callback_data: `familyhubos:approve:${selectedCategory}:${selectedTopicId}:v1` }],\n        [{ text: 'Changer de catégorie', callback_data: 'familyhubos:back:categories:v1' }]\n      ]\n    };\n  } else if (parts[0] === 'familyhubos' && parts[1] === 'approve') {\n    selectedCategory = parts[2] || null;\n    selectedTopicId = parts[3] || null;\n    const topic = findTopic(selectedCategory, selectedTopicId);\n    selectedTopic = topic?.topic || selectedTopicId;\n    createNotionPage = true;\n    responseText = `Sujet validé\\n\\n${selectedTopic}\\n\\nCréation de la page Notion en cours...`;\n  } else if (callbackData === 'familyhubos:back:categories:v1') {\n    responseText = 'Choisis une catégorie pour le prochain meeting familial.';\n    telegramReplyMarkup = categoryKeyboard();\n  } else {\n    responseText = 'Choix reçu, mais pas encore pris en charge.';\n  }\n}\n\nif (route === 'start') responseText = 'Bienvenue dans FamilyHubOS. Utilise /choose pour préparer le prochain meeting familial.';\nif (route === 'help') responseText = 'Commandes disponibles: /start, /help, /status, /choose, /idea.';\nif (route === 'status') responseText = `FamilyHubOS fonctionne. Âge calculé: ${input.familyContext.child.ageLabel}.`;\nif (route === 'choose') {\n  responseText = 'Choisis une catégorie pour le prochain meeting familial.';\n  telegramReplyMarkup = categoryKeyboard();\n}\nif (route === 'idea') {\n  selectedTopic = text.replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  responseText = selectedTopic ? `Idée reçue: ${selectedTopic}` : 'Ajoute ton idée après /idea.';\n}\n\nreturn [{\n  json: {\n    ...input,\n    route,\n    selectedCategory,\n    selectedTopicId,\n    selectedTopic,\n    telegramReplyMarkup,\n    createNotionPage,\n    planning: {\n      categories,\n      responseText\n    }\n  }\n}];"
       },
       "id": "parse-command",
       "name": "05 Parse Command And Choice",
@@ -184,7 +184,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    telegramReplyMarkup: input.telegramReplyMarkup,\n    selectedCategory: input.selectedCategory,\n    selectedTopic: input.selectedTopic,\n    telegram: input.telegram,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
+        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    telegramReplyMarkup: input.telegramReplyMarkup,\n    selectedCategory: input.selectedCategory,\n    selectedTopicId: input.selectedTopicId,\n    selectedTopic: input.selectedTopic,\n    createNotionPage: Boolean(input.createNotionPage),\n    telegram: input.telegram,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
       },
       "id": "final-result",
       "name": "09 TEST_SUCCESS or Runtime Result",
@@ -350,6 +350,99 @@
         3380,
         160
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "create-notion-page",
+              "leftValue": "={{ $json.createNotionPage }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "should-create-notion-page",
+      "name": "11 Should Create Notion Page?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2860,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst categoryLabels = {\n  developpement: 'Développement',\n  nutrition: 'Nutrition',\n  sante: 'Santé',\n  culture: 'Culture',\n  musique: 'Musique',\n  sciences: 'Sciences',\n  loisirs: 'Loisirs',\n  parentalite: 'Parentalité',\n  nature: 'Nature',\n  lecture: 'Lecture',\n  auto: 'Sciences'\n};\n\nconst databaseId = '38191dcb-f47f-474d-bb23-4ce6b9b729c8';\nconst category = categoryLabels[input.selectedCategory] || 'Autre';\nconst topic = input.selectedTopic || input.meeting?.topic || 'Sujet FamilyHubOS';\nconst meetingNumber = input.meeting?.number || 1;\nconst title = `Family Meeting #${meetingNumber} - ${topic}`;\nconst today = new Date().toISOString().slice(0, 10);\nconst childAge = input.familyContext?.child?.ageLabel || '';\n\nreturn [{\n  json: {\n    parent: {\n      database_id: databaseId\n    },\n    properties: {\n      Title: {\n        title: [{ text: { content: title } }]\n      },\n      Category: {\n        select: { name: category }\n      },\n      Topic: {\n        rich_text: [{ text: { content: topic } }]\n      },\n      Status: {\n        status: { name: 'Not started' }\n      },\n      ChildAge: {\n        rich_text: [{ text: { content: childAge } }]\n      },\n      PreparationStatus: {\n        select: { name: 'Draft' }\n      },\n      MeetingNumber: {\n        number: meetingNumber\n      },\n      Date: {\n        date: { start: today }\n      },\n      TelegramInteractionId: {\n        rich_text: [{ text: { content: input.telegram?.interactionId || '' } }]\n      },\n      SourceCount: {\n        number: 0\n      }\n    },\n    children: [\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Résumé' } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Sujet : ${topic}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Catégorie : ${category}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Âge enfant : ${childAge}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Pourquoi maintenant' } }] }\n      },\n      {\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: 'Sujet adapté au contexte actuel de l’enfant. Cette section sera enrichie avec la recherche fiable.' } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Questions de discussion' } }] }\n      },\n      {\n        object: 'block',\n        type: 'numbered_list_item',\n        numbered_list_item: { rich_text: [{ type: 'text', text: { content: 'Qu’est-ce qu’on veut comprendre ?' } }] }\n      },\n      {\n        object: 'block',\n        type: 'numbered_list_item',\n        numbered_list_item: { rich_text: [{ type: 'text', text: { content: 'Qu’est-ce qu’on observe déjà à la maison ?' } }] }\n      },\n      {\n        object: 'block',\n        type: 'numbered_list_item',\n        numbered_list_item: { rich_text: [{ type: 'text', text: { content: 'Quelle petite action tester cette semaine ?' } }] }\n      },\n      {\n        object: 'block',\n        type: 'callout',\n        callout: {\n          icon: { type: 'emoji', emoji: '⚠️' },\n          color: 'yellow_background',\n          rich_text: [{ type: 'text', text: { content: 'Brouillon non sourcé. Ne pas considérer cette fiche comme fiable tant que les sources ne sont pas validées.' } }]\n        }\n      }\n    ]\n  }\n}];"
+      },
+      "id": "build-notion-page-payload",
+      "name": "12 Build Notion Page Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/pages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "create-notion-meeting-page",
+      "name": "13 Create Notion Meeting Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3380,
+        40
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "",
+          "name": "FamilyHubOS n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const notionResponse = $json;\nconst previous = $('09 TEST_SUCCESS or Runtime Result').first().json;\nconst pageUrl = notionResponse.url || notionResponse.public_url || null;\nconst topic = previous.selectedTopic || previous.meeting?.topic || 'Sujet FamilyHubOS';\n\nreturn [{\n  json: {\n    ...previous,\n    telegramReplyMarkup: null,\n    responseText: pageUrl\n      ? `Page Notion créée.\\n\\nSujet: ${topic}\\n\\n${pageUrl}`\n      : `Page Notion créée.\\n\\nSujet: ${topic}`\n  }\n}];"
+      },
+      "id": "prepare-notion-confirmation",
+      "name": "14 Prepare Notion Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3640,
+        40
+      ]
     }
   ],
   "connections": {
@@ -503,7 +596,7 @@
         ],
         [
           {
-            "node": "11 Has Telegram Buttons?",
+            "node": "11 Should Create Notion Page?",
             "type": "main",
             "index": 0
           }
@@ -544,6 +637,57 @@
         [
           {
             "node": "13 Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11 Should Create Notion Page?": {
+      "main": [
+        [
+          {
+            "node": "12 Build Notion Page Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "11 Has Telegram Buttons?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 Build Notion Page Payload": {
+      "main": [
+        [
+          {
+            "node": "13 Create Notion Meeting Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13 Create Notion Meeting Page": {
+      "main": [
+        [
+          {
+            "node": "14 Prepare Notion Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "14 Prepare Notion Confirmation": {
+      "main": [
+        [
+          {
+            "node": "11 Has Telegram Buttons?",
             "type": "main",
             "index": 0
           }

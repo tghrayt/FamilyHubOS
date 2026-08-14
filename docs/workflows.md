@@ -23,11 +23,12 @@ Inside the workflow:
 7. Topic suggestion buttons
 8. Draft meeting preview after topic selection
 9. Draft approval or back-to-categories buttons
-10. Research placeholder
-11. Source validation placeholder
-12. Meeting builder placeholder
-13. Telegram `sendMessage` for webhook runs
-14. Manual test output or webhook response
+10. Notion `Meetings` page creation after approval
+11. Research placeholder
+12. Source validation placeholder
+13. Meeting builder placeholder
+14. Telegram `sendMessage` for webhook runs
+15. Manual test output or webhook response
 
 ## Manual Test
 
@@ -47,9 +48,8 @@ This proves the workflow imports, executes, builds context and returns a visible
 
 ## Next Real Integrations
 
-After the Telegram `/status` path is stable, connect these pieces one by one:
+After the Notion page creation path is stable, connect these pieces one by one:
 
-- Notion page creation
 - Google Calendar event creation
 - Web search provider
 - LLM structured summary

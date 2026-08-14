@@ -103,6 +103,8 @@ LLM_MODEL
 - Web Search provider
 - PostgreSQL connection to database `familyos`
 
+For the Notion HTTP node, select the n8n credential created from the Notion internal integration token if n8n does not bind it automatically after sync.
+
 ## First Test
 
 Open `FAMILYHUBOS-WORKFLOW` in n8n and run `Manual Test Trigger`.

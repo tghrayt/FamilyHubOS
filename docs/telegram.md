@@ -59,6 +59,7 @@ Flow :
 5. Parent clicks a topic.
 6. FamilyHubOS sends a draft meeting preview with decision buttons.
 7. Parent validates the topic or goes back to category selection.
+8. When validated, FamilyHubOS creates a Notion page in `Meetings`.
 
 Main buttons :
 

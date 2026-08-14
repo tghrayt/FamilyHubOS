@@ -53,7 +53,7 @@ then the workflow sends a draft meeting preview with topic, category, age, discu
 
 Given an allowed user,
 when the draft topic is approved,
-then the workflow confirms that it is ready to create the Notion page once Notion is configured.
+then the workflow creates a Notion page in `Meetings` and sends the Notion page URL back to Telegram.
 
 Given an allowed user,
 when the back-to-categories button is clicked,
