@@ -12,9 +12,11 @@ Configure these on the n8n deployment, not in Git:
 TELEGRAM_BOT_TOKEN
 TELEGRAM_ALLOWED_USER_IDS
 TELEGRAM_ALLOWED_CHAT_IDS
+FAMILYHUBOS_CHILD_BIRTH_DATE
 ```
 
 `TELEGRAM_BOT_TOKEN` is used by `FAMILYHUBOS-WORKFLOW` to call Telegram `sendMessage`.
+`FAMILYHUBOS_CHILD_BIRTH_DATE` must use `YYYY-MM-DD` and is used to calculate the child age in `/status`.
 
 ## Security
 

@@ -19,7 +19,7 @@ TEST_SUCCESS
 
 ## Telegram Path
 
-`Telegram Webhook` normalizes Telegram updates, applies user/chat allowlists, then routes commands and sends a Telegram message with `sendMessage`.
+`Telegram Webhook` normalizes Telegram updates from the n8n webhook body, applies user/chat allowlists, then routes commands and sends a Telegram message with `sendMessage`.
 
 Supported early commands:
 
