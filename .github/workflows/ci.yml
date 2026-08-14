@@ -86,6 +86,7 @@ jobs:
             "n8n/workflows/FAMILYOS_PHASE2_04_FOLLOW_UP.json"
             "n8n/workflows/FAMILYOS_MAIN_90_ERROR_HANDLER.json"
             "n8n/subworkflows/FAMILYOS_LIB_01_CONTEXT_BUILDER.json"
+            "n8n/workflows/FAMILYOS_TEST_01_CONTEXT_BUILDER.json"
             "n8n/subworkflows/FAMILYOS_LIB_02_WEB_SEARCH.json"
             "n8n/subworkflows/FAMILYOS_LIB_03_SOURCE_VALIDATOR.json"
             "n8n/subworkflows/FAMILYOS_LIB_04_NOTION.json"

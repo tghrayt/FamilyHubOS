@@ -52,6 +52,7 @@ Workflow exports use readable prefixes:
 - `FAMILYOS_MAIN_*` for MVP orchestration workflows.
 - `FAMILYOS_LIB_*` for reusable internal workflows.
 - `FAMILYOS_PHASE2_*` for future workflows not enabled in the MVP.
+- `FAMILYOS_TEST_*` for manual test workflows.
 
 See `docs/n8n-naming.md`.
 

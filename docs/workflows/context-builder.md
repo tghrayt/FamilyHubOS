@@ -84,7 +84,25 @@ Later, it will load recent meetings and topic backlog from Notion.
 
 ## Manual n8n Test
 
-Use the `Manual Test Trigger` path. It injects:
+Prefer the dedicated test workflow:
+
+```text
+FAMILYOS_TEST_01_CONTEXT_BUILDER
+```
+
+It ends on a clearly named node:
+
+```text
+TEST_SUCCESS - Context Builder OK
+```
+
+or:
+
+```text
+TEST_FAILED - Context Builder KO
+```
+
+The test injects:
 
 ```json
 {

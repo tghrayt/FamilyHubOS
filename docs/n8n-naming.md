@@ -33,11 +33,18 @@ FAMILYOS_LIB_05_CALENDAR
 FAMILYOS_LIB_06_NOTIFICATION
 ```
 
+Test workflows:
+
+```text
+FAMILYOS_TEST_01_CONTEXT_BUILDER
+```
+
 ## How To Read The List
 
 - `MAIN` means parent-facing or orchestration workflows.
 - `LIB` means internal reusable workflows.
 - `PHASE2` means intentionally not part of the MVP.
+- `TEST` means a manual test workflow made for the n8n UI.
 - Numeric prefixes define the order.
 
 ## Existing Old Names
@@ -60,4 +67,3 @@ SUB_NOTIFICATION
 ```
 
 The GitHub sync updates workflows by name. It cannot know that these old names should be renamed.
-
