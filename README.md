@@ -20,7 +20,7 @@ Telegram
   -> research
   -> source validation
   -> meeting builder
-  -> Notion page
+  -> Notion meeting/topic pages
   -> Google Calendar event
   -> Telegram confirmation
 ```

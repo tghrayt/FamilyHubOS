@@ -91,10 +91,10 @@ Example :
 
 Expected behavior :
 
-- Create a topic in Notion later.
-- Status: `Idea`.
+- Create a page in the Notion `Topics` database immediately.
+- Status: `Not started`.
 - Source: `Telegram`.
-- Store author and date.
+- Store author and return the Notion page URL in Telegram.
 
 ## Callback Design
 

@@ -103,7 +103,7 @@ LLM_MODEL
 - Web Search provider
 - PostgreSQL connection to database `familyos`
 
-For the Notion HTTP node, select the n8n credential created from the Notion internal integration token if n8n does not bind it automatically after sync.
+For each Notion HTTP node, select the n8n credential created from the Notion internal integration token if n8n does not bind it automatically after sync. If a Notion node returns `resource could not be found`, open the target Notion database (`Meetings` or `Topics`) and share it with the same Notion integration.
 
 ## First Test
 

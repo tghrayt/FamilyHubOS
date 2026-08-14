@@ -65,7 +65,7 @@ then the workflow sends category buttons again.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,
-then the workflow returns route `idea` and extracts the idea text.
+then the workflow creates a Notion page in `Topics` and sends the Notion page URL back to Telegram.
 
 Given an allowed user,
 when `/unknown` is sent,
@@ -98,4 +98,4 @@ then it creates:
 
 ## Current Limitation
 
-The current workflow is importable and testable, but live Telegram sending, Notion, Calendar, web search and LLM nodes are still placeholders.
+The current workflow is importable and testable. Live Telegram sending, Notion `Meetings` creation and Notion `Topics` creation are connected; Calendar, web search and LLM nodes are still placeholders.
