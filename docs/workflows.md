@@ -53,7 +53,7 @@ This proves the workflow imports, executes, builds context and returns a visible
 
 After the Telegram-to-Notion paths are stable, connect these pieces one by one:
 
-- Google Calendar credential and event creation
+- Google Calendar credential setup from `docs/google-calendar.md`, then event creation
 - Web search provider
 - LLM structured summary
 - PostgreSQL technical logging
