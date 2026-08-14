@@ -426,7 +426,6 @@
       ],
       "credentials": {
         "notionApi": {
-          "id": "",
           "name": "FamilyHubOS n8n"
         }
       }
@@ -487,7 +486,6 @@
       ],
       "credentials": {
         "notionApi": {
-          "id": "",
           "name": "FamilyHubOS n8n"
         }
       }
@@ -612,7 +610,6 @@
       ],
       "credentials": {
         "notionApi": {
-          "id": "",
           "name": "FamilyHubOS n8n"
         }
       }
