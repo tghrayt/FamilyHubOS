@@ -74,13 +74,10 @@ Configure values based on:
 .env.example
 ```
 
-Required for the first Telegram tests:
+Required for the first Telegram sendMessage test:
 
 ```text
 TELEGRAM_BOT_TOKEN
-TELEGRAM_ALLOWED_USER_IDS
-TELEGRAM_ALLOWED_CHAT_IDS
-FAMILYHUBOS_CHILD_BIRTH_DATE
 ```
 
 Required later:
@@ -120,7 +117,7 @@ The test currently validates the internal path with a hard-coded child birth dat
 
 ## First Telegram Test
 
-After setting `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALLOWED_USER_IDS`, `TELEGRAM_ALLOWED_CHAT_IDS` and `FAMILYHUBOS_CHILD_BIRTH_DATE` on the n8n deployment:
+After setting `TELEGRAM_BOT_TOKEN` on the n8n deployment:
 
 1. Sync `FAMILYHUBOS-WORKFLOW`.
 2. Activate the workflow in n8n.

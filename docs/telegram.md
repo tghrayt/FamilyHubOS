@@ -6,17 +6,15 @@ Telegram is the FamilyHubOS remote control. It should work mainly through a priv
 
 ## n8n Environment Variables
 
-Configure these on the n8n deployment, not in Git:
+Configure the bot token on the n8n deployment, not in Git:
 
 ```text
 TELEGRAM_BOT_TOKEN
-TELEGRAM_ALLOWED_USER_IDS
-TELEGRAM_ALLOWED_CHAT_IDS
-FAMILYHUBOS_CHILD_BIRTH_DATE
 ```
 
 `TELEGRAM_BOT_TOKEN` is used by `FAMILYHUBOS-WORKFLOW` to call Telegram `sendMessage`.
-`FAMILYHUBOS_CHILD_BIRTH_DATE` must use `YYYY-MM-DD` and is used to calculate the child age in `/status`.
+
+For the first Telegram test, the allowed Telegram user/chat id and child birth date are defined directly in the workflow because this n8n instance blocks `$env` access inside Code nodes.
 
 ## Security
 
