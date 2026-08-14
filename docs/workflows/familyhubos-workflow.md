@@ -29,6 +29,8 @@ Supported early commands:
 - `/choose`
 - `/idea`
 
+`/choose` returns inline category buttons. Category button clicks are handled through Telegram callback queries.
+
 Unauthorized requests receive a neutral response.
 
 ## Placeholders

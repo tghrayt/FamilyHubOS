@@ -19,11 +19,12 @@ Inside the workflow:
 3. Security allowlist
 4. Family context builder
 5. Command and choice parsing
-6. Research placeholder
-7. Source validation placeholder
-8. Meeting builder placeholder
-9. Telegram `sendMessage` for webhook runs
-10. Manual test output or webhook response
+6. `/choose` category buttons
+7. Research placeholder
+8. Source validation placeholder
+9. Meeting builder placeholder
+10. Telegram `sendMessage` for webhook runs
+11. Manual test output or webhook response
 
 ## Manual Test
 

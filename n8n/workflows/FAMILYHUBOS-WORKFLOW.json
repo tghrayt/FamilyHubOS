@@ -108,7 +108,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst command = input.telegram?.command || null;\nconst text = input.telegram?.messageText || '';\nconst categories = input.config?.categories?.allowed || ['developpement','nutrition','sante','culture','musique','sciences','loisirs','parentalite','nature','lecture','autre'];\nconst route = input.telegram?.type === 'callback' ? 'callback' : command || 'unknown';\n\nlet responseText = 'FamilyHubOS est prêt.';\nlet selectedTopic = input.selectedTopic || null;\nlet selectedCategory = input.selectedCategory || null;\n\nif (route === 'start') responseText = 'Bienvenue dans FamilyHubOS. Utilise /choose pour préparer le prochain meeting familial.';\nif (route === 'help') responseText = 'Commandes disponibles: /start, /help, /status, /choose, /idea.';\nif (route === 'status') responseText = `FamilyHubOS fonctionne. Âge calculé: ${input.familyContext.child.ageLabel}.`;\nif (route === 'choose') responseText = `Choisis une catégorie: ${categories.join(', ')}`;\nif (route === 'idea') {\n  selectedTopic = text.replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  responseText = selectedTopic ? `Idée reçue: ${selectedTopic}` : 'Ajoute ton idée après /idea.';\n}\n\nreturn [{\n  json: {\n    ...input,\n    route,\n    selectedCategory,\n    selectedTopic,\n    planning: {\n      categories,\n      responseText\n    }\n  }\n}];"
+        "jsCode": "const input = $json;\nconst command = input.telegram?.command || null;\nconst text = input.telegram?.messageText || '';\nconst callbackData = input.telegram?.callbackData || '';\nconst categories = [\n  { id: 'developpement', label: 'Développement' },\n  { id: 'nutrition', label: 'Nutrition' },\n  { id: 'sante', label: 'Santé' },\n  { id: 'culture', label: 'Culture' },\n  { id: 'musique', label: 'Musique' },\n  { id: 'sciences', label: 'Sciences' },\n  { id: 'loisirs', label: 'Loisirs' },\n  { id: 'parentalite', label: 'Parentalité' },\n  { id: 'nature', label: 'Nature' },\n  { id: 'lecture', label: 'Lecture' }\n];\nconst categoryById = Object.fromEntries(categories.map(category => [category.id, category]));\nlet route = input.telegram?.type === 'callback' ? 'callback' : command || 'unknown';\nlet responseText = 'FamilyHubOS est prêt.';\nlet selectedTopic = input.selectedTopic || null;\nlet selectedCategory = input.selectedCategory || null;\nlet telegramReplyMarkup = null;\n\nfunction categoryKeyboard() {\n  const rows = [];\n  for (let index = 0; index < categories.length; index += 2) {\n    rows.push(categories.slice(index, index + 2).map(category => ({\n      text: category.label,\n      callback_data: `familyhubos:choose:category:${category.id}:v1`\n    })));\n  }\n  rows.unshift([{ text: 'Laisser FamilyHubOS proposer', callback_data: 'familyhubos:choose:auto:v1' }]);\n  return { inline_keyboard: rows };\n}\n\nif (route === 'callback') {\n  const parts = callbackData.split(':');\n  if (parts[0] === 'familyhubos' && parts[1] === 'choose' && parts[2] === 'category') {\n    selectedCategory = parts[3] || null;\n    const label = categoryById[selectedCategory]?.label || selectedCategory || 'inconnue';\n    responseText = `Catégorie choisie: ${label}. Prochaine étape: je proposerai bientôt 3 sujets fiables.`;\n  } else if (callbackData === 'familyhubos:choose:auto:v1') {\n    selectedCategory = 'auto';\n    responseText = 'Mode automatique choisi. Prochaine étape: FamilyHubOS proposera bientôt 3 sujets adaptés.';\n  } else {\n    responseText = 'Choix reçu, mais pas encore pris en charge.';\n  }\n}\n\nif (route === 'start') responseText = 'Bienvenue dans FamilyHubOS. Utilise /choose pour préparer le prochain meeting familial.';\nif (route === 'help') responseText = 'Commandes disponibles: /start, /help, /status, /choose, /idea.';\nif (route === 'status') responseText = `FamilyHubOS fonctionne. Âge calculé: ${input.familyContext.child.ageLabel}.`;\nif (route === 'choose') {\n  responseText = 'Choisis une catégorie pour le prochain meeting familial.';\n  telegramReplyMarkup = categoryKeyboard();\n}\nif (route === 'idea') {\n  selectedTopic = text.replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  responseText = selectedTopic ? `Idée reçue: ${selectedTopic}` : 'Ajoute ton idée après /idea.';\n}\n\nreturn [{\n  json: {\n    ...input,\n    route,\n    selectedCategory,\n    selectedTopic,\n    telegramReplyMarkup,\n    planning: {\n      categories,\n      responseText\n    }\n  }\n}];"
       },
       "id": "parse-command",
       "name": "05 Parse Command And Choice",
@@ -148,7 +148,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    telegram: input.telegram,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
+        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    telegramReplyMarkup: input.telegramReplyMarkup,\n    selectedCategory: input.selectedCategory,\n    selectedTopic: input.selectedTopic,\n    telegram: input.telegram,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
       },
       "id": "final-result",
       "name": "09 TEST_SUCCESS or Runtime Result",
@@ -197,6 +197,65 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-buttons",
+              "leftValue": "={{ Boolean($json.telegramReplyMarkup) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-telegram-buttons",
+      "name": "11 Has Telegram Buttons?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2860, 160]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.telegram.chatId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.responseText }}"
+            },
+            {
+              "name": "reply_markup",
+              "value": "={{ $json.telegramReplyMarkup }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-telegram-message",
+      "name": "12 Send Telegram Message With Buttons",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3120, 80]
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
         "sendBody": true,
@@ -215,11 +274,11 @@
         },
         "options": {}
       },
-      "id": "send-telegram-message",
-      "name": "11 Send Telegram Message",
+      "id": "send-simple-telegram-message",
+      "name": "12 Send Telegram Message",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2860, 160]
+      "position": [3120, 260]
     },
     {
       "parameters": {
@@ -230,10 +289,10 @@
         }
       },
       "id": "webhook-response",
-      "name": "12 Webhook Response",
+      "name": "13 Webhook Response",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [3120, 160]
+      "position": [3380, 160]
     }
   ],
   "connections": {
@@ -387,18 +446,47 @@
         ],
         [
           {
-            "node": "11 Send Telegram Message",
+            "node": "11 Has Telegram Buttons?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "11 Send Telegram Message": {
+    "11 Has Telegram Buttons?": {
       "main": [
         [
           {
-            "node": "12 Webhook Response",
+            "node": "12 Send Telegram Message With Buttons",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "12 Send Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 Send Telegram Message With Buttons": {
+      "main": [
+        [
+          {
+            "node": "13 Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 Send Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "13 Webhook Response",
             "type": "main",
             "index": 0
           }

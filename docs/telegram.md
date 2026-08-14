@@ -52,17 +52,16 @@ First command set:
 
 Flow :
 
-1. Show the main choice.
-2. Let parents choose automatic, category, topic, or backlog.
-3. If category is selected, show category buttons.
-4. If topic is needed, offer generated candidates or free text.
+1. `/choose` sends inline category buttons.
+2. Parent clicks a category.
+3. Telegram sends a callback query to the same webhook.
+4. FamilyHubOS confirms the selected category.
+5. Topic generation will be added later.
 
 Main buttons :
 
 - `Laisse FamilyOS choisir`
-- `Choisir une catégorie`
-- `Choisir directement un sujet`
-- `Voir les idées en attente`
+- category buttons
 
 Categories :
 

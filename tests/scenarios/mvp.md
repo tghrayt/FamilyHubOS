@@ -41,7 +41,11 @@ then the workflow returns route `help`.
 
 Given an allowed user,
 when `/choose` is sent,
-then the workflow returns route `choose`.
+then the workflow returns route `choose` and sends inline category buttons.
+
+Given an allowed user,
+when the `Sciences` category button is clicked,
+then the workflow returns route `callback` and confirms `Sciences`.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,
