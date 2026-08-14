@@ -55,6 +55,10 @@ Given an allowed user,
 when the draft topic is approved,
 then the workflow creates a Notion page in `Meetings` and sends the Notion page URL back to Telegram.
 
+Given the same topic, category and date already exist in Notion,
+when the draft topic is approved again,
+then the workflow sends the existing Notion page URL and does not create a duplicate page.
+
 Given an allowed user,
 when the back-to-categories button is clicked,
 then the workflow sends category buttons again.

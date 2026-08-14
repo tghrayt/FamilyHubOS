@@ -392,7 +392,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3120,
+        3900,
         40
       ]
     },
@@ -421,7 +421,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3380,
+        4160,
         40
       ],
       "credentials": {
@@ -440,8 +440,101 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
+        4420,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst categoryLabels = {\n  developpement: 'Développement',\n  nutrition: 'Nutrition',\n  sante: 'Santé',\n  culture: 'Culture',\n  musique: 'Musique',\n  sciences: 'Sciences',\n  loisirs: 'Loisirs',\n  parentalite: 'Parentalité',\n  nature: 'Nature',\n  lecture: 'Lecture',\n  auto: 'Sciences'\n};\n\nconst category = categoryLabels[input.selectedCategory] || 'Autre';\nconst topic = input.selectedTopic || input.meeting?.topic || 'Sujet FamilyHubOS';\nconst today = new Date().toISOString().slice(0, 10);\n\nreturn [{\n  json: {\n    ...input,\n    notionSearch: {\n      database_id: '38191dcb-f47f-474d-bb23-4ce6b9b729c8',\n      filter: {\n        and: [\n          {\n            property: 'Topic',\n            rich_text: {\n              equals: topic\n            }\n          },\n          {\n            property: 'Category',\n            select: {\n              equals: category\n            }\n          },\n          {\n            property: 'Date',\n            date: {\n              equals: today\n            }\n          }\n        ]\n      },\n      page_size: 1\n    }\n  }\n}];"
+      },
+      "id": "build-notion-duplicate-search",
+      "name": "12 Build Notion Duplicate Search",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/databases/38191dcb-f47f-474d-bb23-4ce6b9b729c8/query",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.notionSearch) }}",
+        "options": {}
+      },
+      "id": "search-existing-notion-meeting",
+      "name": "13 Search Existing Notion Meeting",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3380,
+        40
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "",
+          "name": "FamilyHubOS n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "existing-page",
+              "leftValue": "={{ ($json.results || []).length > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-existing-notion-meeting",
+      "name": "14 Has Existing Notion Meeting?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
         3640,
         40
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const searchResult = $json;\nconst previous = $('09 TEST_SUCCESS or Runtime Result').first().json;\nconst existing = (searchResult.results || [])[0] || {};\nconst pageUrl = existing.url || null;\nconst topic = previous.selectedTopic || previous.meeting?.topic || 'Sujet FamilyHubOS';\n\nreturn [{\n  json: {\n    ...previous,\n    telegramReplyMarkup: null,\n    responseText: pageUrl\n      ? `Fiche Notion déjà existante.\\n\\nSujet: ${topic}\\n\\n${pageUrl}`\n      : `Fiche Notion déjà existante.\\n\\nSujet: ${topic}`\n  }\n}];"
+      },
+      "id": "prepare-existing-notion-confirmation",
+      "name": "15 Prepare Existing Notion Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3900,
+        -120
       ]
     }
   ],
@@ -647,7 +740,7 @@
       "main": [
         [
           {
-            "node": "12 Build Notion Page Payload",
+            "node": "12 Build Notion Duplicate Search",
             "type": "main",
             "index": 0
           }
@@ -684,6 +777,57 @@
       ]
     },
     "14 Prepare Notion Confirmation": {
+      "main": [
+        [
+          {
+            "node": "11 Has Telegram Buttons?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 Build Notion Duplicate Search": {
+      "main": [
+        [
+          {
+            "node": "13 Search Existing Notion Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13 Search Existing Notion Meeting": {
+      "main": [
+        [
+          {
+            "node": "14 Has Existing Notion Meeting?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "14 Has Existing Notion Meeting?": {
+      "main": [
+        [
+          {
+            "node": "15 Prepare Existing Notion Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "12 Build Notion Page Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "15 Prepare Existing Notion Confirmation": {
       "main": [
         [
           {

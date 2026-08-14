@@ -23,12 +23,13 @@ Inside the workflow:
 7. Topic suggestion buttons
 8. Draft meeting preview after topic selection
 9. Draft approval or back-to-categories buttons
-10. Notion `Meetings` page creation after approval
-11. Research placeholder
-12. Source validation placeholder
-13. Meeting builder placeholder
-14. Telegram `sendMessage` for webhook runs
-15. Manual test output or webhook response
+10. Notion duplicate check by topic, category and date
+11. Notion `Meetings` page creation after approval
+12. Research placeholder
+13. Source validation placeholder
+14. Meeting builder placeholder
+15. Telegram `sendMessage` for webhook runs
+16. Manual test output or webhook response
 
 ## Manual Test
 
@@ -59,10 +60,9 @@ After the Notion page creation path is stable, connect these pieces one by one:
 
 Stable keys will be used before real writes:
 
-- `meetingId`
-- `workflowRunId`
-- `calendarEventId`
-- `telegramInteractionId`
-- `notionPageId`
+- `selectedCategory`
+- `selectedTopic`
+- meeting date
+- later: `meetingId`, `workflowRunId`, `calendarEventId`, `telegramInteractionId`, `notionPageId`
 
 Retries must not create duplicate Notion pages, Calendar events or Telegram notifications.

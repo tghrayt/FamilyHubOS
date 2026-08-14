@@ -59,7 +59,8 @@ Flow :
 5. Parent clicks a topic.
 6. FamilyHubOS sends a draft meeting preview with decision buttons.
 7. Parent validates the topic or goes back to category selection.
-8. When validated, FamilyHubOS creates a Notion page in `Meetings`.
+8. When validated, FamilyHubOS checks whether a matching Notion page already exists for the same topic, category and date.
+9. If it exists, FamilyHubOS returns the existing page URL. Otherwise it creates a new page in `Meetings`.
 
 Main buttons :
 
