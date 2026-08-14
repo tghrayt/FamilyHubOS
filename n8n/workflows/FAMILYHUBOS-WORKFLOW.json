@@ -148,7 +148,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Telegram sendMessage', 'Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
+        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    telegram: input.telegram,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
       },
       "id": "final-result",
       "name": "09 TEST_SUCCESS or Runtime Result",
@@ -197,17 +197,43 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json.telegram.chatId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.responseText }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-telegram-message",
+      "name": "11 Send Telegram Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2860, 160]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ $json }}",
+        "responseBody": "{ \"ok\": true }",
         "options": {
           "responseCode": 200
         }
       },
       "id": "webhook-response",
-      "name": "11 Webhook Response",
+      "name": "12 Webhook Response",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [2860, 160]
+      "position": [3120, 160]
     }
   ],
   "connections": {
@@ -361,7 +387,18 @@
         ],
         [
           {
-            "node": "11 Webhook Response",
+            "node": "11 Send Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "11 Send Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "12 Webhook Response",
             "type": "main",
             "index": 0
           }

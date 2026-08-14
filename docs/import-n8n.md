@@ -77,6 +77,7 @@ Configure values based on:
 Required for the first Telegram tests:
 
 ```text
+TELEGRAM_BOT_TOKEN
 TELEGRAM_ALLOWED_USER_IDS
 TELEGRAM_ALLOWED_CHAT_IDS
 ```
@@ -115,3 +116,23 @@ TEST_SUCCESS
 ```
 
 The test currently validates the internal path with a hard-coded child birth date. Real Telegram, Notion, Calendar, search and LLM nodes will be connected after this workflow shell is stable.
+
+## First Telegram Test
+
+After setting `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ALLOWED_USER_IDS` and `TELEGRAM_ALLOWED_CHAT_IDS` on the n8n deployment:
+
+1. Sync `FAMILYHUBOS-WORKFLOW`.
+2. Activate the workflow in n8n.
+3. Configure Telegram `setWebhook` to:
+
+```text
+https://<N8N_HOST>/webhook/familyhubos/telegram
+```
+
+4. Send `/status` from the allowed chat.
+
+Expected Telegram response:
+
+```text
+FamilyHubOS fonctionne. Age calcule: ...
+```

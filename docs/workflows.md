@@ -22,7 +22,8 @@ Inside the workflow:
 6. Research placeholder
 7. Source validation placeholder
 8. Meeting builder placeholder
-9. Manual test output or webhook response
+9. Telegram `sendMessage` for webhook runs
+10. Manual test output or webhook response
 
 ## Manual Test
 
@@ -42,9 +43,8 @@ This proves the workflow imports, executes, builds context and returns a visible
 
 ## Next Real Integrations
 
-After the single workflow is stable, connect these pieces one by one:
+After the Telegram `/status` path is stable, connect these pieces one by one:
 
-- Telegram `sendMessage`
 - Notion page creation
 - Google Calendar event creation
 - Web search provider

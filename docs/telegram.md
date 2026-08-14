@@ -1,8 +1,20 @@
-# FamilyOS - Telegram
+# FamilyHubOS - Telegram
 
 ## Role
 
-Telegram is the FamilyOS remote control. It should work mainly through a private family group and inline buttons.
+Telegram is the FamilyHubOS remote control. It should work mainly through a private family group and inline buttons.
+
+## n8n Environment Variables
+
+Configure these on the n8n deployment, not in Git:
+
+```text
+TELEGRAM_BOT_TOKEN
+TELEGRAM_ALLOWED_USER_IDS
+TELEGRAM_ALLOWED_CHAT_IDS
+```
+
+`TELEGRAM_BOT_TOKEN` is used by `FAMILYHUBOS-WORKFLOW` to call Telegram `sendMessage`.
 
 ## Security
 
@@ -15,7 +27,7 @@ Unauthorized users should receive no sensitive information.
 
 ## Commands
 
-Initial command set :
+Initial command set:
 
 - `/start`
 - `/help`
@@ -28,7 +40,7 @@ Initial command set :
 - `/random`
 - `/status`
 
-MVP command set :
+First command set:
 
 - `/start`
 - `/help`
@@ -76,9 +88,9 @@ Example :
 
 Expected behavior :
 
-- Create a topic in Notion.
-- Status : `Idea`.
-- Source : `Telegram`.
+- Create a topic in Notion later.
+- Status: `Idea`.
+- Source: `Telegram`.
 - Store author and date.
 
 ## Callback Design
@@ -88,9 +100,9 @@ Callbacks should include stable IDs, not raw business text when possible.
 Example :
 
 ```text
-familyos:choose:category:science:v1
-familyos:topic:selected:<topicId>:v1
-familyos:auto:v1
+familyhubos:choose:category:science:v1
+familyhubos:topic:selected:<topicId>:v1
+familyhubos:auto:v1
 ```
 
 ## Telegram Test Scenarios
@@ -103,3 +115,19 @@ familyos:auto:v1
 - Double click on the same callback.
 - Timeout while waiting for parent choice.
 
+## Telegram Webhook Setup
+
+After `FAMILYHUBOS-WORKFLOW` is synced and activated in n8n, configure the Telegram bot webhook to the production webhook URL:
+
+```text
+https://<N8N_HOST>/webhook/familyhubos/telegram
+```
+
+Use Telegram `setWebhook` with the real bot token from the VM or a secure terminal:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+  -d "url=https://<N8N_HOST>/webhook/familyhubos/telegram"
+```
+
+Then send `/status` from the allowed Telegram chat.
