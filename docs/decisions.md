@@ -1,91 +1,96 @@
-# FamilyOS - Decisions
+# FamilyHubOS - Decisions
 
 This file records architecture decisions for the project.
 
-## ADR-001 - Start With n8n-First MVP
+## ADR-001 - Start With One n8n Workflow
 
-Status : Accepted
+Status: Accepted
 
-Decision :
+Decision:
 
-Use n8n as the primary orchestrator for the MVP, with small workflows and reusable sub-workflows.
+Use n8n as the primary orchestrator and keep the early implementation in one workflow:
 
-Context :
+```text
+FAMILYHUBOS-WORKFLOW
+```
+
+Context:
 
 The goal is to validate a weekly family ritual with Telegram, research, Notion and Calendar before adding custom services.
 
-Consequences :
+Consequences:
 
-- Faster MVP.
-- Less code to deploy.
-- Business logic must be kept disciplined to avoid scattered workflow logic.
+- The n8n UI stays readable.
+- There is only one import/sync target.
+- Business logic must be kept disciplined inside the workflow.
+- Splitting is allowed later only when one section becomes painful to maintain.
 
 ## ADR-002 - Notion Owns Business Memory
 
-Status : Accepted
+Status: Accepted
 
-Decision :
+Decision:
 
 Store meetings, topics, sources, decisions and feedback in Notion.
 
-Context :
+Context:
 
 Notion is the human-facing memory and interface.
 
-Consequences :
+Consequences:
 
 - Parents can inspect and edit data easily.
 - Technical logs must stay outside Notion.
 
 ## ADR-003 - PostgreSQL Owns Technical State
 
-Status : Accepted
+Status: Accepted
 
-Decision :
+Decision:
 
 Use PostgreSQL for workflow runs, errors, idempotency, cache and conversation state.
 
-Context :
+Context:
 
 Retries and Telegram interactions require reliable technical state.
 
-Consequences :
+Consequences:
 
 - Avoids polluting Notion.
-- Requires a small schema later in the MVP.
-
-## ADR-005 - Reuse Existing n8n and n8n-postgres
-
-Status : Accepted
-
-Decision :
-
-Use the existing n8n instance in the Kubernetes namespace `automation` and the existing PostgreSQL instance `n8n-postgres`. Create a dedicated database named `familyos` for FamilyOS technical tables.
-
-Context :
-
-The VM is a DevOps lab running k3s, Traefik, cert-manager and an `automation` namespace that already hosts n8n with PostgreSQL.
-
-Consequences :
-
-- No second n8n deployment for the MVP.
-- No new PostgreSQL pod for the MVP.
-- FamilyOS technical data is isolated from n8n internals by database.
-- Backup coverage for `familyos` must be confirmed before important production use.
+- Requires a small schema before relying on retries and logs.
 
 ## ADR-004 - Source Validation Is Explicit
 
-Status : Accepted
+Status: Accepted
 
-Decision :
+Decision:
 
-Use a dedicated source validation step before meeting generation.
+Use an explicit source validation section before meeting generation.
 
-Context :
+Context:
 
-FamilyOS can touch health, child development and education. Trust must be traceable.
+FamilyHubOS can touch health, child development and education. Trust must be traceable.
 
-Consequences :
+Consequences:
 
 - More reliable outputs.
 - Research may fail gracefully when sources are insufficient.
+
+## ADR-005 - Reuse Existing n8n and n8n-postgres
+
+Status: Accepted
+
+Decision:
+
+Use the existing n8n instance in the Kubernetes namespace `automation` and the existing PostgreSQL instance `n8n-postgres`. Create a dedicated database named `familyos` for FamilyHubOS technical tables.
+
+Context:
+
+The VM is a DevOps lab running k3s, Traefik, cert-manager and an `automation` namespace that already hosts n8n with PostgreSQL.
+
+Consequences:
+
+- No second n8n deployment.
+- No new PostgreSQL pod.
+- FamilyHubOS technical data is isolated from n8n internals by database.
+- Backup coverage for `familyos` must be confirmed before important production use.

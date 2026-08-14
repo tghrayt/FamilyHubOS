@@ -11,14 +11,6 @@ on:
         options:
           - "true"
           - "false"
-      include_disabled_phase2:
-        description: "Include Phase 2 placeholder workflows"
-        required: true
-        default: "true"
-        type: choice
-        options:
-          - "true"
-          - "false"
 
 jobs:
   sync:
@@ -51,7 +43,6 @@ jobs:
           N8N_URL: ${{ secrets.N8N_URL }}
           N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
           DRY_RUN: ${{ inputs.dry_run }}
-          INCLUDE_DISABLED_PHASE2: ${{ inputs.include_disabled_phase2 }}
         run: |
           python - <<'PY'
           import json
@@ -63,18 +54,10 @@ jobs:
           from pathlib import Path
 
           dry_run = os.environ.get("DRY_RUN", "true").lower() == "true"
-          include_phase2 = os.environ.get("INCLUDE_DISABLED_PHASE2", "true").lower() == "true"
           n8n_url = (os.environ.get("N8N_URL") or "").rstrip("/")
           api_key = os.environ.get("N8N_API_KEY") or ""
 
-          workflow_files = sorted(Path("n8n/subworkflows").glob("*.json"))
-          workflow_files += sorted(Path("n8n/workflows").glob("*.json"))
-
-          if not include_phase2:
-              workflow_files = [
-                  path for path in workflow_files
-                  if path.name != "FAMILYOS_PHASE2_04_FOLLOW_UP.json"
-              ]
+          workflow_files = [Path("n8n/workflows/FAMILYHUBOS-WORKFLOW.json")]
 
           def load_workflow(path):
               data = json.loads(path.read_text(encoding="utf-8"))

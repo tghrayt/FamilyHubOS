@@ -1,0 +1,386 @@
+{
+  "name": "FAMILYHUBOS-WORKFLOW",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-test-trigger",
+      "name": "Manual Test Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 200]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "familyhubos/telegram",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "telegram-webhook",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "familyhubos-telegram"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    testOnly: true,\n    now: '2026-08-14T12:00:00.000Z',\n    child: {\n      birthDate: '2025-12-01'\n    },\n    telegram: {\n      interactionId: 'manual-test-context',\n      chatId: 'test-chat',\n      userId: 'test-user',\n      username: 'test-parent',\n      type: 'command',\n      command: 'status',\n      messageText: '/status',\n      callbackData: null,\n      authorized: true\n    },\n    recentMeetings: [],\n    recentCategories: ['sante', 'culture'],\n    topicBacklog: [],\n    preferences: {\n      sourceLanguages: ['fr', 'en']\n    }\n  }\n}];"
+      },
+      "id": "build-manual-test-input",
+      "name": "01 Build Manual Test Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const update = $json;\nconst message = update.message || update.edited_message || null;\nconst callbackQuery = update.callback_query || null;\nconst callbackMessage = callbackQuery?.message || null;\nconst sourceMessage = message || callbackMessage || {};\nconst from = callbackQuery?.from || message?.from || {};\nconst chat = sourceMessage.chat || {};\nconst text = message?.text || null;\nconst callbackData = callbackQuery?.data || null;\nconst command = text && text.startsWith('/') ? text.split(/\\s+/)[0].slice(1).split('@')[0] : null;\nconst type = callbackData ? 'callback' : command ? 'command' : 'message';\n\nreturn [{\n  json: {\n    testOnly: false,\n    telegram: {\n      rawUpdateId: update.update_id?.toString() || null,\n      interactionId: callbackQuery?.id || update.update_id?.toString() || `${Date.now()}`,\n      chatId: chat.id?.toString() || '',\n      userId: from.id?.toString() || '',\n      username: from.username || null,\n      receivedAt: new Date().toISOString(),\n      type,\n      command,\n      callbackData,\n      messageText: text,\n      authorized: false,\n      payload: {\n        updateId: update.update_id || null,\n        messageId: sourceMessage.message_id || null,\n        callbackQueryId: callbackQuery?.id || null,\n        firstName: from.first_name || null,\n        lastName: from.last_name || null\n      }\n    }\n  }\n}];"
+      },
+      "id": "normalize-telegram-update",
+      "name": "01 Normalize Telegram Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $json;\nif (item.testOnly) {\n  return [{ json: item }];\n}\n\nconst allowedUsers = ($env.TELEGRAM_ALLOWED_USER_IDS || '').split(',').map(x => x.trim()).filter(Boolean);\nconst allowedChats = ($env.TELEGRAM_ALLOWED_CHAT_IDS || '').split(',').map(x => x.trim()).filter(Boolean);\nconst userAllowed = allowedUsers.includes(item.telegram.userId);\nconst chatAllowed = allowedChats.includes(item.telegram.chatId);\n\nitem.telegram.authorized = userAllowed && chatAllowed;\nitem.telegram.authorization = { userAllowed, chatAllowed };\nreturn [{ json: item }];"
+      },
+      "id": "security-allowlist",
+      "name": "02 Security Allowlist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "authorized",
+              "leftValue": "={{ $json.telegram.authorized }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-authorized",
+      "name": "03 Is Authorized?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [780, 100]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"ok\": true }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "ignore-unauthorized",
+      "name": "03 Ignore Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1040, 280]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst config = input.config || {};\nconst family = config.family || {};\nconst childConfig = family.child || {};\nconst preferences = {\n  ...(family.preferences || {}),\n  ...(input.preferences || {})\n};\n\nconst birthDate = input.child?.birthDate || childConfig.birthDate;\nif (!birthDate) {\n  if (input.testOnly) {\n    return [{ json: { ...input, testResult: { status: 'TEST_FAILED', message: 'Missing child birthDate.' } } }];\n  }\n  throw new Error('Missing child birthDate. Provide config.family.child.birthDate or input.child.birthDate.');\n}\n\nfunction parseDateOnly(value) {\n  const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(value);\n  if (!match) {\n    throw new Error('child birthDate must use YYYY-MM-DD format.');\n  }\n  return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));\n}\n\nfunction calculateAgeMonths(startDate, nowDate) {\n  let months = (nowDate.getUTCFullYear() - startDate.getUTCFullYear()) * 12;\n  months += nowDate.getUTCMonth() - startDate.getUTCMonth();\n  if (nowDate.getUTCDate() < startDate.getUTCDate()) {\n    months -= 1;\n  }\n  return Math.max(0, months);\n}\n\nfunction ageLabelFromMonths(months) {\n  if (months < 12) return `${months} mois`;\n  const years = Math.floor(months / 12);\n  const remainingMonths = months % 12;\n  if (remainingMonths === 0) return years === 1 ? '1 an' : `${years} ans`;\n  return `${years} an${years > 1 ? 's' : ''} et ${remainingMonths} mois`;\n}\n\nconst now = input.now ? new Date(input.now) : new Date();\nconst birth = parseDateOnly(birthDate);\nconst ageMonths = calculateAgeMonths(birth, now);\nconst child = {\n  birthDate,\n  ageMonths,\n  ageYears: Math.floor(ageMonths / 12),\n  ageLabel: ageLabelFromMonths(ageMonths)\n};\n\nreturn [{\n  json: {\n    ...input,\n    familyContext: {\n      child,\n      recentMeetings: input.recentMeetings || [],\n      recentCategories: input.recentCategories || [],\n      existingTopics: input.existingTopics || [],\n      openDecisions: input.openDecisions || [],\n      topicBacklog: input.topicBacklog || [],\n      preferences\n    }\n  }\n}];"
+      },
+      "id": "build-context",
+      "name": "04 Build Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst command = input.telegram?.command || null;\nconst text = input.telegram?.messageText || '';\nconst categories = input.config?.categories?.allowed || ['developpement','nutrition','sante','culture','musique','sciences','loisirs','parentalite','nature','lecture','autre'];\nconst route = input.telegram?.type === 'callback' ? 'callback' : command || 'unknown';\n\nlet responseText = 'FamilyHubOS est prêt.';\nlet selectedTopic = input.selectedTopic || null;\nlet selectedCategory = input.selectedCategory || null;\n\nif (route === 'start') responseText = 'Bienvenue dans FamilyHubOS. Utilise /choose pour préparer le prochain meeting familial.';\nif (route === 'help') responseText = 'Commandes disponibles: /start, /help, /status, /choose, /idea.';\nif (route === 'status') responseText = `FamilyHubOS fonctionne. Âge calculé: ${input.familyContext.child.ageLabel}.`;\nif (route === 'choose') responseText = `Choisis une catégorie: ${categories.join(', ')}`;\nif (route === 'idea') {\n  selectedTopic = text.replace(/^\\/idea(@\\w+)?\\s*/i, '').trim();\n  responseText = selectedTopic ? `Idée reçue: ${selectedTopic}` : 'Ajoute ton idée après /idea.';\n}\n\nreturn [{\n  json: {\n    ...input,\n    route,\n    selectedCategory,\n    selectedTopic,\n    planning: {\n      categories,\n      responseText\n    }\n  }\n}];"
+      },
+      "id": "parse-command",
+      "name": "05 Parse Command And Choice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1300, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst topic = input.selectedTopic || 'Sujet de test FamilyHubOS';\nconst category = input.selectedCategory || 'sciences';\n\nreturn [{\n  json: {\n    ...input,\n    research: {\n      topic,\n      category,\n      whyNow: `Sujet adapté au contexte actuel de l'enfant (${input.familyContext.child.ageLabel}).`,\n      executiveSummary: 'Résumé placeholder: la recherche fiable sera branchée après validation du flux complet.',\n      keyPoints: [],\n      sources: [],\n      discussionQuestions: [\n        'Qu voulons-nous comprendre sur ce sujet ?',\n        'Qu pouvons-nous tester cette semaine ?'\n      ],\n      practicalIdeas: [],\n      warnings: ['Recherche réelle non branchée: ne pas utiliser ce contenu comme information validée.']\n    }\n  }\n}];"
+      },
+      "id": "research-placeholder",
+      "name": "06 Research Placeholder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst acceptedSources = (input.research.sources || []).filter(source => source.accepted || source.score >= 5);\nreturn [{\n  json: {\n    ...input,\n    sourceValidation: {\n      total: input.research.sources.length,\n      accepted: acceptedSources.length,\n      rejected: input.research.sources.length - acceptedSources.length,\n      status: acceptedSources.length > 0 ? 'HAS_ACCEPTED_SOURCES' : 'NO_ACCEPTED_SOURCES_YET'\n    }\n  }\n}];"
+      },
+      "id": "validate-sources-placeholder",
+      "name": "07 Validate Sources Placeholder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1820, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst meetingNumber = input.meetingNumber || 1;\nconst date = input.meetingDate || new Date().toISOString();\nconst title = `Family Meeting #${meetingNumber} - ${input.research.topic}`;\n\nreturn [{\n  json: {\n    ...input,\n    meeting: {\n      id: `familyhubos-meeting-${meetingNumber}`,\n      number: meetingNumber,\n      title,\n      topic: input.research.topic,\n      category: input.research.category,\n      date,\n      childAgeLabel: input.familyContext.child.ageLabel,\n      status: 'Ready',\n      preparationStatus: 'Ready',\n      readingTimeMinutes: 0,\n      sourceCount: input.sourceValidation.accepted\n    },\n    notionPayload: {\n      status: 'PLACEHOLDER_NOT_CREATED',\n      title\n    },\n    calendarPayload: {\n      status: 'PLACEHOLDER_NOT_CREATED',\n      summary: title\n    }\n  }\n}];"
+      },
+      "id": "build-meeting",
+      "name": "08 Build Meeting",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2080, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst success = input.testOnly\n  ? input.familyContext.child.ageMonths === 8 && input.familyContext.child.ageLabel === '8 mois'\n  : true;\n\nreturn [{\n  json: {\n    testOnly: Boolean(input.testOnly),\n    status: success ? 'TEST_SUCCESS' : 'TEST_FAILED',\n    message: success\n      ? `FamilyHubOS workflow OK. Child age: ${input.familyContext.child.ageLabel}. Route: ${input.route}.`\n      : 'FamilyHubOS workflow test failed.',\n    route: input.route,\n    responseText: input.planning.responseText,\n    familyContext: input.familyContext,\n    meeting: input.meeting,\n    researchStatus: input.sourceValidation.status,\n    nextRealIntegrations: ['Telegram sendMessage', 'Notion create page', 'Google Calendar create event', 'Web search provider']\n  }\n}];"
+      },
+      "id": "final-result",
+      "name": "09 TEST_SUCCESS or Runtime Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2340, 80]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "manual-test",
+              "leftValue": "={{ $json.testOnly }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "is-manual-test",
+      "name": "10 Is Manual Test?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2600, 80]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items;"
+      },
+      "id": "manual-final-output",
+      "name": "11 Manual Final Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2860, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "webhook-response",
+      "name": "11 Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2860, 160]
+    }
+  ],
+  "connections": {
+    "Manual Test Trigger": {
+      "main": [
+        [
+          {
+            "node": "01 Build Manual Test Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "01 Normalize Telegram Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "01 Build Manual Test Input": {
+      "main": [
+        [
+          {
+            "node": "02 Security Allowlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "01 Normalize Telegram Update": {
+      "main": [
+        [
+          {
+            "node": "02 Security Allowlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 Security Allowlist": {
+      "main": [
+        [
+          {
+            "node": "03 Is Authorized?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 Is Authorized?": {
+      "main": [
+        [
+          {
+            "node": "04 Build Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03 Ignore Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 Build Context": {
+      "main": [
+        [
+          {
+            "node": "05 Parse Command And Choice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 Parse Command And Choice": {
+      "main": [
+        [
+          {
+            "node": "06 Research Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 Research Placeholder": {
+      "main": [
+        [
+          {
+            "node": "07 Validate Sources Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Validate Sources Placeholder": {
+      "main": [
+        [
+          {
+            "node": "08 Build Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08 Build Meeting": {
+      "main": [
+        [
+          {
+            "node": "09 TEST_SUCCESS or Runtime Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "09 TEST_SUCCESS or Runtime Result": {
+      "main": [
+        [
+          {
+            "node": "10 Is Manual Test?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10 Is Manual Test?": {
+      "main": [
+        [
+          {
+            "node": "11 Manual Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "11 Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "FamilyHubOS"
+    }
+  ],
+  "triggerCount": 2,
+  "updatedAt": "2026-08-14T00:00:00.000Z",
+  "versionId": "familyhubos-single-workflow"
+}

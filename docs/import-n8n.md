@@ -1,8 +1,12 @@
-# FamilyOS - n8n Import Guide
+# FamilyHubOS - n8n Import Guide
 
 ## Goal
 
-Import the prepared workflow skeletons into the existing n8n instance deployed in the Kubernetes namespace `automation`.
+Import or update only one workflow in the existing n8n instance deployed in the Kubernetes namespace `automation`.
+
+```text
+FAMILYHUBOS-WORKFLOW
+```
 
 ## Before Import
 
@@ -35,39 +39,32 @@ N8N_URL
 N8N_API_KEY
 ```
 
-Run it first with `dry_run = true`.
-
-Then run it with `dry_run = false` to create or update workflows in n8n.
-
-The sync does not activate workflows automatically.
-
-Workflow names follow `docs/n8n-naming.md` so the n8n interface stays readable.
-
-If old names were already synced once, delete the old workflows manually after the renamed workflows have synced.
-
-## Manual Import Order
-
-Import subworkflows first:
+Run it first with:
 
 ```text
-n8n/subworkflows/FAMILYOS_LIB_01_CONTEXT_BUILDER.json
-n8n/subworkflows/FAMILYOS_LIB_02_WEB_SEARCH.json
-n8n/subworkflows/FAMILYOS_LIB_03_SOURCE_VALIDATOR.json
-n8n/subworkflows/FAMILYOS_LIB_04_NOTION.json
-n8n/subworkflows/FAMILYOS_LIB_05_CALENDAR.json
-n8n/subworkflows/FAMILYOS_LIB_06_NOTIFICATION.json
+dry_run = true
 ```
 
-Then import main workflows:
+Then run it with:
 
 ```text
-n8n/workflows/FAMILYOS_MAIN_00_TELEGRAM_ROUTER.json
-n8n/workflows/FAMILYOS_MAIN_01_WEEKLY_PLANNER.json
-n8n/workflows/FAMILYOS_MAIN_02_RESEARCH.json
-n8n/workflows/FAMILYOS_MAIN_03_MEETING_BUILDER.json
-n8n/workflows/FAMILYOS_PHASE2_04_FOLLOW_UP.json
-n8n/workflows/FAMILYOS_MAIN_90_ERROR_HANDLER.json
+dry_run = false
 ```
+
+The sync creates or updates `FAMILYHUBOS-WORKFLOW` by name. It does not activate the workflow automatically.
+
+## Old Workflows To Delete Once
+
+The n8n API sync updates by name; it does not delete old workflows that were imported during earlier experiments.
+
+After `FAMILYHUBOS-WORKFLOW` exists in n8n, manually delete old split workflows such as:
+
+```text
+FAMILYOS_*
+SUB_*
+```
+
+Keep only `FAMILYHUBOS-WORKFLOW`.
 
 ## Environment Variables
 
@@ -109,23 +106,12 @@ LLM_MODEL
 
 ## First Test
 
-Start with:
+Open `FAMILYHUBOS-WORKFLOW` in n8n and run `Manual Test Trigger`.
+
+Expected output:
 
 ```text
-FAMILYOS_MAIN_00_TELEGRAM_ROUTER
+TEST_SUCCESS
 ```
 
-Test the webhook with a sample Telegram update before connecting the real Telegram webhook.
-
-Expected routes:
-
-- `/start` -> `start`
-- `/help` -> `help`
-- `/choose` -> `choose`
-- `/idea Some idea` -> `idea`
-- `/status` -> `status`
-
-## Notes
-
-The current workflows are skeletons. Some nodes return JSON instead of sending real Telegram messages or writing to Notion/Calendar. This is intentional for safe import and step-by-step testing.
-
+The test currently validates the internal path with a hard-coded child birth date. Real Telegram, Notion, Calendar, search and LLM nodes will be connected after this workflow shell is stable.

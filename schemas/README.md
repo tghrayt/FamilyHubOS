@@ -1,6 +1,6 @@
 # FamilyOS - JSON Schemas
 
-These schemas define the contracts between n8n workflows and sub-workflows.
+These schemas define the structured contracts used inside the n8n workflow.
 
 ## Files
 
@@ -12,7 +12,7 @@ These schemas define the contracts between n8n workflows and sub-workflows.
 
 ## Rule
 
-Workflows should pass structured JSON between steps. Avoid parsing free text with fragile regexes.
+Workflow steps should pass structured JSON. Avoid parsing free text with fragile regexes.
 
-If a workflow receives invalid JSON, it should retry or route to `FAMILYOS_MAIN_90_ERROR_HANDLER`.
+If a live integration receives invalid JSON, it should retry or route to an explicit error handling section inside `FAMILYHUBOS-WORKFLOW`.
 

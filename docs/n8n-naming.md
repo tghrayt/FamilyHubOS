@@ -1,4 +1,4 @@
-# FamilyOS - n8n Naming
+# FamilyHubOS - n8n Naming
 
 ## Goal
 
@@ -6,64 +6,27 @@ Keep the n8n interface readable.
 
 ## Naming Convention
 
-Main MVP workflows:
+Use one workflow name:
 
 ```text
-FAMILYOS_MAIN_00_TELEGRAM_ROUTER
-FAMILYOS_MAIN_01_WEEKLY_PLANNER
-FAMILYOS_MAIN_02_RESEARCH
-FAMILYOS_MAIN_03_MEETING_BUILDER
-FAMILYOS_MAIN_90_ERROR_HANDLER
+FAMILYHUBOS-WORKFLOW
 ```
 
-Phase 2 workflows:
+Avoid extra prefixes such as `MVP`, numeric ordering, `LIB`, `SUB`, `MAIN`, or `TEST` in n8n workflow names.
 
-```text
-FAMILYOS_PHASE2_04_FOLLOW_UP
-```
+## Why
 
-Reusable internal workflows:
+FamilyHubOS is still early. A single workflow is easier to inspect, execute and debug in the n8n UI.
 
-```text
-FAMILYOS_LIB_01_CONTEXT_BUILDER
-FAMILYOS_LIB_02_WEB_SEARCH
-FAMILYOS_LIB_03_SOURCE_VALIDATOR
-FAMILYOS_LIB_04_NOTION
-FAMILYOS_LIB_05_CALENDAR
-FAMILYOS_LIB_06_NOTIFICATION
-```
-
-Test workflows:
-
-```text
-FAMILYOS_TEST_01_CONTEXT_BUILDER
-```
-
-## How To Read The List
-
-- `MAIN` means parent-facing or orchestration workflows.
-- `LIB` means internal reusable workflows.
-- `PHASE2` means intentionally not part of the MVP.
-- `TEST` means a manual test workflow made for the n8n UI.
-- Numeric prefixes define the order.
+If the workflow becomes too large later, split only when there is a concrete maintenance problem.
 
 ## Existing Old Names
 
-If n8n already contains workflows with the previous names, delete them manually after the new names have synced:
+If n8n already contains old workflows, delete them manually after `FAMILYHUBOS-WORKFLOW` has synced:
 
 ```text
-FAMILYOS_01_WEEKLY_PLANNER
-FAMILYOS_02_RESEARCH
-FAMILYOS_03_MEETING_BUILDER
-FAMILYOS_04_FOLLOW_UP
-FAMILYOS_05_TELEGRAM_ROUTER
-FAMILYOS_90_ERROR_HANDLER
-SUB_CONTEXT_BUILDER
-SUB_WEB_SEARCH
-SUB_SOURCE_VALIDATOR
-SUB_NOTION
-SUB_CALENDAR
-SUB_NOTIFICATION
+FAMILYOS_*
+SUB_*
 ```
 
-The GitHub sync updates workflows by name. It cannot know that these old names should be renamed.
+The GitHub sync updates workflows by name. It cannot know that old names should be removed.

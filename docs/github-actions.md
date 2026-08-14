@@ -1,4 +1,4 @@
-# FamilyOS - GitHub Actions
+# FamilyHubOS - GitHub Actions
 
 ## CI
 
@@ -22,11 +22,11 @@ It validates:
 Current behavior:
 
 - `dry_run = true`: validates and prints the sync plan only
-- `dry_run = false`: creates or updates n8n workflows through the n8n public API
+- `dry_run = false`: creates or updates `FAMILYHUBOS-WORKFLOW` through the n8n public API
 
-The sync matches workflows by name. Existing workflows are updated, missing workflows are created.
+The sync matches the workflow by name. Existing workflow is updated, missing workflow is created.
 
-The sync does not activate workflows automatically.
+The sync does not activate the workflow automatically.
 
 ## Required GitHub Secrets
 
@@ -53,15 +53,12 @@ Run the workflow manually with:
 
 ```text
 dry_run = true
-include_disabled_phase2 = true
 ```
 
-If the plan looks correct, run again with:
+If the plan shows only `FAMILYHUBOS-WORKFLOW`, run again with:
 
 ```text
 dry_run = false
-include_disabled_phase2 = true
 ```
 
-Then check n8n UI before activating any workflow.
-
+Then check n8n UI before activating the workflow.
