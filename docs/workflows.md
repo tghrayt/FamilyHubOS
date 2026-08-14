@@ -22,11 +22,12 @@ Inside the workflow:
 6. `/choose` category buttons
 7. Topic suggestion buttons
 8. Draft meeting preview after topic selection
-9. Research placeholder
-10. Source validation placeholder
-11. Meeting builder placeholder
-12. Telegram `sendMessage` for webhook runs
-13. Manual test output or webhook response
+9. Draft approval or back-to-categories buttons
+10. Research placeholder
+11. Source validation placeholder
+12. Meeting builder placeholder
+13. Telegram `sendMessage` for webhook runs
+14. Manual test output or webhook response
 
 ## Manual Test
 

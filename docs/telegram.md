@@ -57,7 +57,8 @@ Flow :
 3. Telegram sends a callback query to the same webhook.
 4. FamilyHubOS sends 3 suggested topic buttons.
 5. Parent clicks a topic.
-6. FamilyHubOS sends a draft meeting preview for the selected topic.
+6. FamilyHubOS sends a draft meeting preview with decision buttons.
+7. Parent validates the topic or goes back to category selection.
 
 Main buttons :
 
@@ -112,6 +113,8 @@ familyhubos:auto:v1
 - Unknown command.
 - Category callback.
 - Topic callback.
+- Topic approval callback.
+- Back to categories callback.
 - Double click on the same callback.
 - Timeout while waiting for parent choice.
 

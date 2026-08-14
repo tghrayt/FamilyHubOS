@@ -49,7 +49,15 @@ then the workflow returns route `callback` and sends 3 suggested topic buttons.
 
 Given an allowed user,
 when a suggested topic button is clicked,
-then the workflow sends a draft meeting preview with topic, category, age, discussion questions and a clear non-sourced status.
+then the workflow sends a draft meeting preview with topic, category, age, discussion questions, a clear non-sourced status and decision buttons.
+
+Given an allowed user,
+when the draft topic is approved,
+then the workflow confirms that it is ready to create the Notion page once Notion is configured.
+
+Given an allowed user,
+when the back-to-categories button is clicked,
+then the workflow sends category buttons again.
 
 Given an allowed user,
 when `/idea Comment transmettre plusieurs langues à notre enfant ?` is sent,
