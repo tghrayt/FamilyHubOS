@@ -98,7 +98,7 @@ LLM_MODEL
 
 - Telegram Bot API
 - Notion
-- Google Calendar
+- Google Calendar (next manual setup before enabling event creation)
 - LLM provider
 - Web Search provider
 - PostgreSQL connection to database `familyos`
@@ -115,7 +115,7 @@ Expected output:
 TEST_SUCCESS
 ```
 
-The test currently validates the internal path with a hard-coded child birth date. Real Telegram, Notion, Calendar, search and LLM nodes will be connected after this workflow shell is stable.
+The test currently validates the internal path with a hard-coded child birth date. Telegram and Notion are connected. Calendar event payloads are drafted in the workflow; real Calendar event creation requires the Google Calendar credential before enabling the external node.
 
 ## First Telegram Test
 

@@ -93,9 +93,9 @@ then it creates:
 
 - meeting payload
 - Notion payload
-- Calendar payload
+- Calendar draft payload
 - Telegram confirmation payload
 
 ## Current Limitation
 
-The current workflow is importable and testable. Live Telegram sending, Notion `Meetings` creation and Notion `Topics` creation are connected; Calendar, web search and LLM nodes are still placeholders.
+The current workflow is importable and testable. Live Telegram sending, Notion `Meetings` creation and Notion `Topics` creation are connected. Calendar draft payloads are prepared; external Calendar event creation, web search and LLM nodes are still pending.
