@@ -17,16 +17,19 @@ It validates:
 
 ## n8n Sync
 
-`.github/workflows/sync-n8n.yml` is intentionally manual.
+`.github/workflows/sync-n8n.yml` runs automatically on push to `main` when these files change:
+
+- `n8n/workflows/**`
+- `.github/workflows/sync-n8n.yml`
 
 Current behavior:
 
-- `dry_run = true`: validates and prints the sync plan only
-- `dry_run = false`: creates or updates `FAMILYHUBOS-WORKFLOW` through the n8n public API
+- validates n8n JSON
+- creates or updates `FAMILYHUBOS-WORKFLOW` through the n8n public API
 
 The sync matches the workflow by name. Existing workflow is updated, missing workflow is created.
 
-The sync does not activate the workflow automatically.
+The sync does not activate or publish the workflow automatically in n8n.
 
 ## Required GitHub Secrets
 
@@ -47,18 +50,8 @@ https://n8n.example.com
 
 `N8N_API_KEY` is sent as the `X-N8N-API-KEY` header.
 
-## Recommended First Run
+## Normal Usage
 
-Run the workflow manually with:
+Push to `main`. If the changed files include `n8n/workflows/**`, GitHub Actions syncs `FAMILYHUBOS-WORKFLOW` automatically.
 
-```text
-dry_run = true
-```
-
-If the plan shows only `FAMILYHUBOS-WORKFLOW`, run again with:
-
-```text
-dry_run = false
-```
-
-Then check n8n UI before activating the workflow.
+After sync, open n8n and publish the workflow when the UI asks for it.

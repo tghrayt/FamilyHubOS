@@ -1,16 +1,12 @@
 name: Sync n8n Workflows
 
 on:
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Preview sync without changing n8n"
-        required: true
-        default: "true"
-        type: choice
-        options:
-          - "true"
-          - "false"
+  push:
+    branches:
+      - main
+    paths:
+      - "n8n/workflows/**"
+      - ".github/workflows/sync-n8n.yml"
 
 jobs:
   sync:
@@ -42,18 +38,15 @@ jobs:
         env:
           N8N_URL: ${{ secrets.N8N_URL }}
           N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
-          DRY_RUN: ${{ inputs.dry_run }}
         run: |
           python - <<'PY'
           import json
           import os
-          import sys
           import urllib.error
           import urllib.parse
           import urllib.request
           from pathlib import Path
 
-          dry_run = os.environ.get("DRY_RUN", "true").lower() == "true"
           n8n_url = (os.environ.get("N8N_URL") or "").rstrip("/")
           api_key = os.environ.get("N8N_API_KEY") or ""
 
@@ -74,10 +67,6 @@ jobs:
           print("Workflow sync plan:")
           for path, payload in payloads:
               print(f"- {payload['name']} ({path})")
-
-          if dry_run:
-              print("DRY_RUN=true, no call to n8n was made.")
-              sys.exit(0)
 
           if not n8n_url:
               raise SystemExit("Missing GitHub secret N8N_URL.")

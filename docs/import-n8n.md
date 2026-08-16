@@ -39,19 +39,7 @@ N8N_URL
 N8N_API_KEY
 ```
 
-Run it first with:
-
-```text
-dry_run = true
-```
-
-Then run it with:
-
-```text
-dry_run = false
-```
-
-The sync creates or updates `FAMILYHUBOS-WORKFLOW` by name. It does not activate the workflow automatically.
+On every push to `main` that changes `n8n/workflows/**`, the sync creates or updates `FAMILYHUBOS-WORKFLOW` by name. It does not activate the workflow automatically.
 
 ## Old Workflows To Delete Once
 
@@ -121,7 +109,7 @@ The test currently validates the internal path with a hard-coded child birth dat
 
 After setting `TELEGRAM_BOT_TOKEN` on the n8n deployment:
 
-1. Sync `FAMILYHUBOS-WORKFLOW`.
+1. Push changes to `main`; GitHub Actions syncs `FAMILYHUBOS-WORKFLOW` automatically.
 2. Activate the workflow in n8n.
 3. Configure Telegram `setWebhook` to:
 
