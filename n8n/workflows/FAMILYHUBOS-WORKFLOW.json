@@ -635,7 +635,7 @@
         "nodeCredentialType": "googleCalendarOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ summary: $json.calendarPayload.summary, description: $json.calendarPayload.description, start: { dateTime: $json.calendarPayload.start, timeZone: $json.calendarPayload.timezone }, end: { dateTime: $json.calendarPayload.end, timeZone: $json.calendarPayload.timezone }, source: $json.calendarPayload.sourceNotionUrl ? { title: \"Notion\", url: $json.calendarPayload.sourceNotionUrl } : undefined }) }}",
+        "jsonBody": "={{ JSON.stringify({ summary: $json.calendarPayload.summary, description: $json.calendarPayload.description, start: { dateTime: $json.calendarPayload.start, timeZone: $json.calendarPayload.timezone }, end: { dateTime: $json.calendarPayload.end, timeZone: $json.calendarPayload.timezone } }) }}",
         "options": {}
       },
       "id": "create-google-calendar-event",
