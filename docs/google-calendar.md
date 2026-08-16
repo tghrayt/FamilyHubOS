@@ -12,7 +12,7 @@ The workflow already prepares a `calendarPayload` with:
 - timezone `Europe/Paris`
 - Notion page URL when available
 
-The workflow now creates the event through the Google Calendar API after OAuth is configured in n8n.
+The workflow now creates the event through the native n8n Google Calendar node after OAuth is configured in n8n.
 
 ## n8n Credential
 
@@ -107,4 +107,4 @@ The repository only stores workflow structure and documentation. Secrets stay in
   -> Telegram confirmation
 ```
 
-The node creates events in the main calendar for now (`primary`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
+The native Google Calendar node creates events in the main calendar for now (`primary`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
