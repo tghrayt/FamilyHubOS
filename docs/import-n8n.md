@@ -98,7 +98,7 @@ LLM_MODEL
 
 - Telegram Bot API
 - Notion
-- Google Calendar (see `docs/google-calendar.md` before enabling event creation)
+- Google Calendar
 - LLM provider
 - Web Search provider
 - PostgreSQL connection to database `familyos`
@@ -115,7 +115,7 @@ Expected output:
 TEST_SUCCESS
 ```
 
-The test currently validates the internal path with a hard-coded child birth date. Telegram and Notion are connected. Calendar event payloads are drafted in the workflow; real Calendar event creation requires the Google Calendar credential described in `docs/google-calendar.md` before enabling the external node.
+The test currently validates the internal path with a hard-coded child birth date. Telegram, Notion and Google Calendar are connected. If the Calendar node reports an invalid credential after sync, open `15 Create Google Calendar Event` and select `Google Calendar OAuth2 - FamilyHubOS`.
 
 ## First Telegram Test
 

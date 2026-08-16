@@ -53,7 +53,7 @@ then the workflow sends a draft meeting preview with topic, category, age, discu
 
 Given an allowed user,
 when the draft topic is approved,
-then the workflow creates a Notion page in `Meetings` and sends the Notion page URL back to Telegram.
+then the workflow creates a Notion page in `Meetings`, creates a Google Calendar event and sends the Notion and Calendar URLs back to Telegram.
 
 Given the same topic, category and date already exist in Notion,
 when the draft topic is approved again,
@@ -93,9 +93,9 @@ then it creates:
 
 - meeting payload
 - Notion payload
-- Calendar draft payload
+- Calendar event payload
 - Telegram confirmation payload
 
 ## Current Limitation
 
-The current workflow is importable and testable. Live Telegram sending, Notion `Meetings` creation and Notion `Topics` creation are connected. Calendar draft payloads are prepared; external Calendar event creation, web search and LLM nodes are still pending.
+The current workflow is importable and testable. Live Telegram sending, Notion `Meetings` creation and Notion `Topics` creation are connected. Google Calendar event creation is connected for new Notion meeting pages; web search and LLM nodes are still pending.

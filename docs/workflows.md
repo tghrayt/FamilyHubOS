@@ -26,7 +26,7 @@ Inside the workflow:
 10. Notion `Topics` page creation from `/idea`
 11. Notion duplicate check by topic, category and date
 12. Notion `Meetings` page creation after approval
-13. Google Calendar event draft payload
+13. Google Calendar event creation after Notion meeting creation
 14. Research placeholder
 15. Source validation placeholder
 16. Meeting builder placeholder
@@ -51,9 +51,8 @@ This proves the workflow imports, executes, builds context and returns a visible
 
 ## Next Real Integrations
 
-After the Telegram-to-Notion paths are stable, connect these pieces one by one:
+After the Telegram, Notion and Google Calendar paths are stable, connect these pieces one by one:
 
-- Google Calendar credential setup from `docs/google-calendar.md`, then event creation
 - Web search provider
 - LLM structured summary
 - PostgreSQL technical logging

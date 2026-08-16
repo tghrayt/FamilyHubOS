@@ -12,7 +12,7 @@ The workflow already prepares a `calendarPayload` with:
 - timezone `Europe/Paris`
 - Notion page URL when available
 
-The real Google Calendar node must wait until OAuth is configured in n8n.
+The workflow now creates the event through the Google Calendar API after OAuth is configured in n8n.
 
 ## n8n Credential
 
@@ -83,13 +83,13 @@ primary
 
 For a shared family calendar, use the calendar's real Calendar ID from Google Calendar settings.
 
-The workflow should later use:
+The workflow currently uses:
 
 ```text
 GOOGLE_CALENDAR_ID=primary
 ```
 
-or the shared calendar ID.
+A later change can move this to a shared family calendar ID.
 
 ## Safety
 
@@ -97,14 +97,13 @@ Do not commit Client ID, Client Secret, OAuth tokens or refresh tokens to Git.
 
 The repository only stores workflow structure and documentation. Secrets stay inside n8n credentials or GitHub Actions secrets.
 
-## Next Workflow Change
-
-After the credential exists, add a Google Calendar node after Notion meeting creation:
+## Current Workflow Path
 
 ```text
 14 Prepare Notion Confirmation
-  -> Create Google Calendar Event
-  -> Prepare Telegram Confirmation With Calendar Link
+  -> 15 Create Google Calendar Event
+  -> 16 Prepare Calendar Confirmation
+  -> Telegram confirmation
 ```
 
-The node should be idempotent later using a stable event key derived from topic, category and meeting date.
+The node creates events in the main calendar for now (`primary`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
