@@ -647,7 +647,7 @@
         "calendar": {
           "__rl": true,
           "mode": "id",
-          "value": "={{ $vars.GOOGLE_CALENDAR_ID }}"
+          "value": "={{ $env.GOOGLE_CALENDAR_ID }}"
         },
         "start": "={{ $json.googleCalendarEventPayload.start.dateTime }}",
         "end": "={{ $json.googleCalendarEventPayload.end.dateTime }}",

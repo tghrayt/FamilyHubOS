@@ -83,13 +83,13 @@ For the native n8n Google Calendar node, use the real Calendar ID. For the main 
 
 For a shared family calendar, use the calendar's real Calendar ID from Google Calendar settings.
 
-The workflow currently reads this value from the n8n variable:
+The workflow currently reads this value from the n8n environment variable:
 
 ```text
 GOOGLE_CALENDAR_ID=<your-google-calendar-id>
 ```
 
-A later change can move this to a shared family calendar ID.
+Set this environment variable on the n8n deployment. A later change can move this to a shared family calendar ID.
 
 ## Safety
 
