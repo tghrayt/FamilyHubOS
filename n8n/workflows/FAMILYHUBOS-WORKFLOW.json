@@ -645,9 +645,9 @@
         "resource": "event",
         "operation": "create",
         "calendar": {
-          "mode": "list",
-          "value": "primary",
-          "cachedResultName": "Primary"
+          "__rl": true,
+          "mode": "id",
+          "value": "primary"
         },
         "start": "={{ $json.googleCalendarEventPayload.start.dateTime }}",
         "end": "={{ $json.googleCalendarEventPayload.end.dateTime }}",
