@@ -647,7 +647,7 @@
         "calendar": {
           "__rl": true,
           "mode": "id",
-          "value": "primary"
+          "value": "tghrayt.ysf@gmail.com"
         },
         "start": "={{ $json.googleCalendarEventPayload.start.dateTime }}",
         "end": "={{ $json.googleCalendarEventPayload.end.dateTime }}",

@@ -75,10 +75,10 @@ Use the exact URL shown by n8n if it differs.
 
 Choose where events should be created.
 
-For the main calendar, Google usually accepts:
+For the native n8n Google Calendar node, use the real Calendar ID. For the main calendar, this is usually your Google account email:
 
 ```text
-primary
+tghrayt.ysf@gmail.com
 ```
 
 For a shared family calendar, use the calendar's real Calendar ID from Google Calendar settings.
@@ -86,7 +86,7 @@ For a shared family calendar, use the calendar's real Calendar ID from Google Ca
 The workflow currently uses:
 
 ```text
-GOOGLE_CALENDAR_ID=primary
+GOOGLE_CALENDAR_ID=tghrayt.ysf@gmail.com
 ```
 
 A later change can move this to a shared family calendar ID.
@@ -107,4 +107,4 @@ The repository only stores workflow structure and documentation. Secrets stay in
   -> Telegram confirmation
 ```
 
-The native Google Calendar node creates events in the main calendar for now (`primary`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
+The native Google Calendar node creates events in the main calendar for now (`tghrayt.ysf@gmail.com`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
