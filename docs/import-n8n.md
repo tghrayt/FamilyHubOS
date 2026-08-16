@@ -103,7 +103,7 @@ Expected output:
 TEST_SUCCESS
 ```
 
-The test currently validates the internal path with a hard-coded child birth date. Telegram, Notion and Google Calendar are connected. If the Calendar node reports an invalid credential after sync, open `15 Create Google Calendar Event` and select `Google Calendar OAuth2 - FamilyHubOS`.
+The test currently validates the internal path with a hard-coded child birth date. Telegram, Notion and Google Calendar are connected. If the Calendar node reports an invalid credential after sync, open `16 Create Google Calendar Event` and select `Google Calendar OAuth2 - FamilyHubOS`.
 
 ## First Telegram Test
 

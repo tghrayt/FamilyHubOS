@@ -629,21 +629,34 @@
     },
     {
       "parameters": {
+        "jsCode": "const input = $json;\nconst payload = input.calendarPayload || {};\n\nfunction toGoogleLocalDateTime(value) {\n  const date = new Date(value);\n  if (Number.isNaN(date.getTime())) {\n    throw new Error(`Invalid Calendar date: ${value}`);\n  }\n\n  const parts = new Intl.DateTimeFormat('sv-SE', {\n    timeZone: payload.timezone || 'Europe/Paris',\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false\n  }).formatToParts(date);\n\n  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));\n  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}:${values.second}`;\n}\n\nconst event = {\n  summary: payload.summary || input.meeting?.title || 'FamilyHubOS meeting',\n  description: payload.description || '',\n  start: {\n    dateTime: toGoogleLocalDateTime(payload.start || input.meeting?.date || new Date().toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  },\n  end: {\n    dateTime: toGoogleLocalDateTime(payload.end || new Date(Date.now() + 60 * 60 * 1000).toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  }\n};\n\nreturn [{\n  json: {\n    ...input,\n    googleCalendarEventPayload: event\n  }\n}];"
+      },
+      "id": "build-google-calendar-event-payload",
+      "name": "15 Build Google Calendar Event Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4680,
+        40
+      ]
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleCalendarOAuth2Api",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ summary: $json.calendarPayload.summary, description: $json.calendarPayload.description, start: { dateTime: $json.calendarPayload.start, timeZone: $json.calendarPayload.timezone }, end: { dateTime: $json.calendarPayload.end, timeZone: $json.calendarPayload.timezone } }) }}",
+        "jsonBody": "={{ JSON.stringify($json.googleCalendarEventPayload) }}",
         "options": {}
       },
       "id": "create-google-calendar-event",
-      "name": "15 Create Google Calendar Event",
+      "name": "16 Create Google Calendar Event",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        4680,
+        4940,
         40
       ],
       "continueOnFail": true,
@@ -655,14 +668,14 @@
     },
     {
       "parameters": {
-        "jsCode": "const calendarResponse = $json;\nconst previous = $('14 Prepare Notion Confirmation').first().json;\nconst topic = previous.selectedTopic || previous.meeting?.topic || 'Sujet FamilyHubOS';\nconst notionUrl = previous.calendarPayload?.sourceNotionUrl || null;\nconst calendarUrl = calendarResponse.htmlLink || calendarResponse.hangoutLink || null;\nconst failed = Boolean(calendarResponse.error || calendarResponse.message?.includes?.('error'));\n\nconst lines = [\n  'Page Notion créée.',\n  '',\n  `Sujet: ${topic}`,\n  notionUrl ? `Notion: ${notionUrl}` : null,\n  failed ? 'Calendrier: création à vérifier dans n8n.' : (calendarUrl ? `Calendrier: ${calendarUrl}` : 'Calendrier: événement créé.')\n].filter(Boolean);\n\nreturn [{\n  json: {\n    ...previous,\n    calendarEvent: failed ? null : calendarResponse,\n    calendarEventUrl: failed ? null : calendarUrl,\n    calendarCreateStatus: failed ? 'FAILED_OR_UNKNOWN' : 'CREATED',\n    telegramReplyMarkup: null,\n    responseText: lines.join('\\n')\n  }\n}];"
+        "jsCode": "const calendarResponse = $json;\nconst previous = $('15 Build Google Calendar Event Payload').first().json;\nconst topic = previous.selectedTopic || previous.meeting?.topic || 'Sujet FamilyHubOS';\nconst notionUrl = previous.calendarPayload?.sourceNotionUrl || null;\nconst calendarUrl = calendarResponse.htmlLink || calendarResponse.hangoutLink || null;\nconst failed = Boolean(calendarResponse.error || calendarResponse.message?.includes?.('error'));\n\nconst lines = [\n  'Page Notion créée.',\n  '',\n  `Sujet: ${topic}`,\n  notionUrl ? `Notion: ${notionUrl}` : null,\n  failed ? 'Calendrier: création à vérifier dans n8n.' : (calendarUrl ? `Calendrier: ${calendarUrl}` : 'Calendrier: événement créé.')\n].filter(Boolean);\n\nreturn [{\n  json: {\n    ...previous,\n    calendarEvent: failed ? null : calendarResponse,\n    calendarEventUrl: failed ? null : calendarUrl,\n    calendarCreateStatus: failed ? 'FAILED_OR_UNKNOWN' : 'CREATED',\n    telegramReplyMarkup: null,\n    responseText: lines.join('\\n')\n  }\n}];"
       },
       "id": "prepare-calendar-confirmation",
-      "name": "16 Prepare Calendar Confirmation",
+      "name": "17 Prepare Calendar Confirmation",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4940,
+        5200,
         40
       ]
     }
@@ -909,7 +922,7 @@
       "main": [
         [
           {
-            "node": "15 Create Google Calendar Event",
+            "node": "15 Build Google Calendar Event Payload",
             "type": "main",
             "index": 0
           }
@@ -1018,18 +1031,29 @@
         ]
       ]
     },
-    "15 Create Google Calendar Event": {
+    "15 Build Google Calendar Event Payload": {
       "main": [
         [
           {
-            "node": "16 Prepare Calendar Confirmation",
+            "node": "16 Create Google Calendar Event",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "16 Prepare Calendar Confirmation": {
+    "16 Create Google Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "17 Prepare Calendar Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "17 Prepare Calendar Confirmation": {
       "main": [
         [
           {

@@ -101,8 +101,9 @@ The repository only stores workflow structure and documentation. Secrets stay in
 
 ```text
 14 Prepare Notion Confirmation
-  -> 15 Create Google Calendar Event
-  -> 16 Prepare Calendar Confirmation
+  -> 15 Build Google Calendar Event Payload
+  -> 16 Create Google Calendar Event
+  -> 17 Prepare Calendar Confirmation
   -> Telegram confirmation
 ```
 
