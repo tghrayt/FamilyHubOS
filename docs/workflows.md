@@ -55,7 +55,7 @@ After the Telegram, Notion and Google Calendar paths are stable, connect these p
 
 - Web search provider
 - LLM structured summary
-- PostgreSQL technical logging
+- PostgreSQL insert node
 
 The current workflow already adds source candidates to the Notion meeting page. They are selected from a small curated catalog and clearly marked as candidates, not as fetched or verified research.
 

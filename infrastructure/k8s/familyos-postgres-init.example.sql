@@ -7,17 +7,31 @@
 --
 -- This file assumes the database already exists and is connected.
 
+create extension if not exists pgcrypto;
+
 create table if not exists workflow_runs (
-    id uuid primary key,
+    id uuid primary key default gen_random_uuid(),
     workflow_name text not null,
     execution_id text,
+    telegram_interaction_id text,
+    telegram_chat_id text,
+    telegram_user_id text,
     meeting_id text,
+    route text,
+    step text,
     status text not null,
+    category text,
+    topic text,
+    source_count integer not null default 0,
+    notion_page_url text,
+    calendar_event_id text,
+    calendar_event_url text,
+    error_code text,
+    error_message text,
     started_at timestamptz not null default now(),
     finished_at timestamptz,
     duration_ms integer,
-    input jsonb,
-    output jsonb,
+    metadata jsonb not null default '{}'::jsonb,
     created_at timestamptz not null default now(),
     updated_at timestamptz not null default now()
 );
@@ -27,6 +41,12 @@ create index if not exists idx_workflow_runs_workflow_name
 
 create index if not exists idx_workflow_runs_meeting_id
     on workflow_runs (meeting_id);
+
+create index if not exists idx_workflow_runs_telegram_interaction_id
+    on workflow_runs (telegram_interaction_id);
+
+create index if not exists idx_workflow_runs_created_at
+    on workflow_runs (created_at);
 
 create index if not exists idx_workflow_runs_status
     on workflow_runs (status);

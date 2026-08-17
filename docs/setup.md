@@ -67,6 +67,8 @@ infrastructure/k8s/familyos-postgres-init.example.sql
 
 It must be reviewed before execution. It is not applied automatically.
 
+Operational setup steps are documented in `docs/postgresql.md`.
+
 ## Business Configuration
 
 Future configurable fields :
