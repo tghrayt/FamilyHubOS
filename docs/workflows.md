@@ -30,8 +30,10 @@ Inside the workflow:
 14. Source candidate builder
 15. Source candidate validation
 16. Meeting builder placeholder
-17. Telegram `sendMessage` for webhook runs
-18. Manual test output or webhook response
+17. PostgreSQL workflow_runs insert from sanitized technicalLog
+18. Restore workflow payload after logging
+19. Telegram sendMessage for webhook runs
+20. Manual test output or webhook response
 
 ## Manual Test
 
@@ -55,7 +57,6 @@ After the Telegram, Notion and Google Calendar paths are stable, connect these p
 
 - Web search provider
 - LLM structured summary
-- PostgreSQL insert node
 
 The current workflow already adds source candidates to the Notion meeting page. They are selected from a small curated catalog and clearly marked as candidates, not as fetched or verified research.
 

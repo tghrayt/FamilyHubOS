@@ -268,7 +268,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2860,
+        5980,
         160
       ]
     },
@@ -301,7 +301,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3120,
+        6240,
         80
       ]
     },
@@ -330,7 +330,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3120,
+        6240,
         260
       ]
     },
@@ -347,7 +347,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        3380,
+        6500,
         160
       ]
     },
@@ -684,6 +684,43 @@
         5200,
         40
       ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "insert into workflow_runs (\n    workflow_name,\n    execution_id,\n    telegram_interaction_id,\n    telegram_chat_id,\n    telegram_user_id,\n    meeting_id,\n    route,\n    step,\n    status,\n    category,\n    topic,\n    source_count,\n    notion_page_url,\n    calendar_event_id,\n    calendar_event_url,\n    error_code,\n    error_message,\n    started_at,\n    finished_at,\n    duration_ms,\n    metadata\n) values (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,\n    $11, $12, $13, $14, $15, $16, $17,\n    $18::timestamptz, $19::timestamptz, $20::integer, $21::jsonb\n)\nreturning $22::jsonb as familyhubos_payload;",
+        "options": {
+          "queryReplacement": "={{ [\n  $json.technicalLog.workflowName,\n  $json.technicalLog.executionId,\n  $json.technicalLog.telegramInteractionId,\n  $json.technicalLog.telegramChatId,\n  $json.technicalLog.telegramUserId,\n  $json.technicalLog.meetingId,\n  $json.technicalLog.route,\n  $json.technicalLog.step,\n  $json.technicalLog.status,\n  $json.technicalLog.category,\n  $json.technicalLog.topic,\n  $json.technicalLog.sourceCount,\n  $json.technicalLog.notionPageUrl,\n  $json.technicalLog.calendarEventId,\n  $json.technicalLog.calendarEventUrl,\n  $json.technicalLog.errorCode,\n  $json.technicalLog.errorMessage,\n  $json.technicalLog.startedAt,\n  $json.technicalLog.finishedAt,\n  $json.technicalLog.durationMs,\n  JSON.stringify({ route: $json.route, researchStatus: $json.researchStatus, calendarCreateStatus: $json.calendarCreateStatus || null }),\n  JSON.stringify($json)\n] }}",
+          "queryBatching": "independently"
+        }
+      },
+      "id": "log-workflow-run",
+      "name": "18 Log Workflow Run",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        5460,
+        160
+      ],
+      "credentials": {
+        "postgres": {
+          "name": "PostgreSQL - FamilyHubOS"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "if ($json.familyhubos_payload) {\n  return [{ json: $json.familyhubos_payload }];\n}\n\nconst fallbackNodes = [\n  '17 Prepare Calendar Confirmation',\n  '15 Prepare Existing Notion Confirmation',\n  '14 Prepare Topic Confirmation',\n  '09 TEST_SUCCESS or Runtime Result'\n];\n\nfor (const name of fallbackNodes) {\n  try {\n    const payload = $(name).first().json;\n    if (payload?.responseText) {\n      return [{\n        json: {\n          ...payload,\n          technicalLog: {\n            ...(payload.technicalLog || {}),\n            logWriteStatus: 'FAILED_OR_SKIPPED',\n            logWriteError: $json.error?.message || $json.message || null\n          }\n        }\n      }];\n    }\n  } catch (error) {}\n}\n\nreturn [{ json: $json }];\n"
+      },
+      "id": "restore-logged-payload",
+      "name": "19 Restore Logged Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5720,
+        160
+      ]
     }
   ],
   "connections": {
@@ -895,7 +932,7 @@
         ],
         [
           {
-            "node": "11 Has Telegram Buttons?",
+            "node": "18 Log Workflow Run",
             "type": "main",
             "index": 0
           }
@@ -979,7 +1016,7 @@
       "main": [
         [
           {
-            "node": "11 Has Telegram Buttons?",
+            "node": "18 Log Workflow Run",
             "type": "main",
             "index": 0
           }
@@ -1030,7 +1067,7 @@
       "main": [
         [
           {
-            "node": "11 Has Telegram Buttons?",
+            "node": "18 Log Workflow Run",
             "type": "main",
             "index": 0
           }
@@ -1060,6 +1097,28 @@
       ]
     },
     "17 Prepare Calendar Confirmation": {
+      "main": [
+        [
+          {
+            "node": "18 Log Workflow Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "18 Log Workflow Run": {
+      "main": [
+        [
+          {
+            "node": "19 Restore Logged Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "19 Restore Logged Payload": {
       "main": [
         [
           {

@@ -35,7 +35,7 @@ Password: configured outside Git
 SSL: off, unless your cluster PostgreSQL requires it
 ```
 
-The workflow already prepares a sanitized `technicalLog` object. The next step is to add the PostgreSQL insert node once this credential exists.
+The workflow writes the sanitized `technicalLog` object into `workflow_runs` through the `18 Log Workflow Run` PostgreSQL node. If the workflow sync does not bind the credential automatically, open this node in n8n and select `PostgreSQL - FamilyHubOS`.
 
 ## Logged Fields
 
@@ -51,3 +51,15 @@ The workflow log deliberately stores only operational fields:
 - error code/message when relevant
 
 Do not store tokens, passwords, raw credentials or full Telegram payloads in this database.
+
+
+## Verify Logs
+
+After publishing the workflow and sending a Telegram command, verify recent rows:
+
+```bash
+POSTGRES_POD="n8n-postgres-8449876dcc-mw2wj"
+PGUSER="n8n"
+
+sudo k3s kubectl -n automation exec -it "$POSTGRES_POD" -- psql -U "$PGUSER" -d familyos -c "select created_at, route, step, status, topic from workflow_runs order by created_at desc limit 10;"
+```
