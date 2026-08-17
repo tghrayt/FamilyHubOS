@@ -27,8 +27,8 @@ Inside the workflow:
 11. Notion duplicate check by topic, category and date
 12. Notion `Meetings` page creation after approval
 13. Google Calendar event creation after Notion meeting creation
-14. Research placeholder
-15. Source validation placeholder
+14. Source candidate builder
+15. Source candidate validation
 16. Meeting builder placeholder
 17. Telegram `sendMessage` for webhook runs
 18. Manual test output or webhook response
@@ -56,6 +56,8 @@ After the Telegram, Notion and Google Calendar paths are stable, connect these p
 - Web search provider
 - LLM structured summary
 - PostgreSQL technical logging
+
+The current workflow already adds source candidates to the Notion meeting page. They are selected from a small curated catalog and clearly marked as candidates, not as fetched or verified research.
 
 ## Idempotency
 

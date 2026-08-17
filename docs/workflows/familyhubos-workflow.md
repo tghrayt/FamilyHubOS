@@ -35,4 +35,4 @@ Unauthorized requests receive a neutral response.
 
 ## Placeholders
 
-The workflow still contains placeholders for research, source validation, Notion, Calendar and notifications. These placeholders are deliberate so import and debugging stay safe before real credentials are wired.
+The workflow now creates deterministic source candidates for each category and writes them into the Notion meeting page. These are not fetched or verified automatically yet; they are clearly marked as candidates until the web search and LLM steps are connected.
