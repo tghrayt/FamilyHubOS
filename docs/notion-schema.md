@@ -316,6 +316,8 @@ Sources: Title, URL, Domain, Publisher, SourceType, ReliabilityScore, Validated,
 
 ## Modeling Notes
 
+- Notion database query requests put the database ID in the URL, not in the JSON body.
+
 - Child age is calculated from birth date. Do not store a fixed child age as source truth.
 - `ChildAge` in Meetings is a historical display label generated at meeting creation time.
 - `CalendarEventId` supports idempotent Calendar updates.
