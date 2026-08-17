@@ -12,6 +12,8 @@
 
 ## Telegram Authorization
 
+The `/whoami` command is the only diagnostic allowlist exception. It may run before the chat is authorized so the family group chat ID can be discovered. It must not create Notion pages, Calendar events, database business records or call external AI providers.
+
 Required configuration :
 
 ```text

@@ -29,8 +29,11 @@ Supported early commands:
 - `/choose`
 - `/idea`
 - `/last`
+- `/whoami`
 
 `/choose` returns inline category buttons. `/last` reads PostgreSQL and returns the latest recorded meeting. Natural text such as `dernier meeting` is also accepted. Category button clicks are handled through Telegram callback queries.
+
+`/whoami` is a limited diagnostic exception: it can pass the allowlist check so a new Telegram group ID can be discovered before the group is authorized.
 
 Unauthorized requests receive a neutral response.
 

@@ -109,6 +109,10 @@ familyhubos:topic:<categoryId>:<topicId>:v1
 familyhubos:auto:v1
 ```
 
+## Whoami Diagnostic
+
+`/whoami` returns the current Telegram chat ID, chat type, user ID, username and allowlist status. It is used when preparing the family group with both parents.
+
 ## Last Meeting
 
 `/last` returns the latest recorded meeting from PostgreSQL. The same intent can also be sent without a slash by writing `dernier meeting`, `dernier sujet` or `last meeting`.
