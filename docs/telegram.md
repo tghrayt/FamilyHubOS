@@ -4,6 +4,8 @@
 
 Telegram is the FamilyHubOS remote control. It should work mainly through a private family group and inline buttons.
 
+Current authorized family group chat ID: `-5543186089`.
+
 ## n8n Environment Variables
 
 Configure the bot token on the n8n deployment, not in Git:

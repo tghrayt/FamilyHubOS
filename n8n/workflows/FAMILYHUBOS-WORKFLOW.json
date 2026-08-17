@@ -57,7 +57,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $json;\nif (item.testOnly) {\n  return [{ json: item }];\n}\n\nconst allowedUsers = ['6869454917'];\nconst allowedChats = ['6869454917'];\nconst userAllowed = allowedUsers.includes(item.telegram.userId);\nconst chatAllowed = allowedChats.includes(item.telegram.chatId);\nconst diagnosticCommandAllowed = item.telegram.command === 'whoami';\n\nitem.telegram.authorized = (userAllowed && chatAllowed) || diagnosticCommandAllowed;\nitem.telegram.authorization = {\n  userAllowed,\n  chatAllowed,\n  diagnosticCommandAllowed,\n  fullyAllowed: userAllowed && chatAllowed\n};\nreturn [{ json: item }];"
+        "jsCode": "const item = $json;\nif (item.testOnly) {\n  return [{ json: item }];\n}\n\nconst allowedUsers = ['6869454917'];\nconst allowedChats = ['6869454917', '-5543186089'];\nconst userAllowed = allowedUsers.includes(item.telegram.userId);\nconst chatAllowed = allowedChats.includes(item.telegram.chatId);\nconst diagnosticCommandAllowed = item.telegram.command === 'whoami';\n\nitem.telegram.authorized = (userAllowed && chatAllowed) || diagnosticCommandAllowed;\nitem.telegram.authorization = {\n  userAllowed,\n  chatAllowed,\n  diagnosticCommandAllowed,\n  fullyAllowed: userAllowed && chatAllowed\n};\nreturn [{ json: item }];"
       },
       "id": "security-allowlist",
       "name": "02 Security Allowlist",
