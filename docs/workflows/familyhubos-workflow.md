@@ -35,6 +35,8 @@ Supported early commands:
 
 `/whoami` is a limited diagnostic exception: it can pass the allowlist check so a new Telegram group ID can be discovered before the group is authorized.
 
+Meeting dates default to Saturday evenings at 20:30 Europe/Paris.
+
 Unauthorized requests receive a neutral response.
 
 ## Placeholders

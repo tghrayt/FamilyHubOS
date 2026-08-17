@@ -108,3 +108,7 @@ The repository only stores workflow structure and documentation. Secrets stay in
 ```
 
 The native Google Calendar node receives the calendar ID from `15 Build Google Calendar Event Payload`. The workflow now generates a stable Google Calendar event ID from meeting date, category and topic. Before creating an event, it tries to fetch that event ID and reuses it when found. This prevents duplicate Calendar events on workflow retries.
+
+## Meeting Schedule
+
+Meetings are scheduled on Saturday evenings at 20:30 Europe/Paris. If a topic is validated after that time on Saturday, the workflow schedules the following Saturday.
