@@ -35,7 +35,7 @@ Password: configured outside Git
 SSL: off, unless your cluster PostgreSQL requires it
 ```
 
-The workflow writes the sanitized `technicalLog` object into `workflow_runs` through the `18 Log Workflow Run` PostgreSQL node. If the workflow sync does not bind the credential automatically, open this node in n8n and select `PostgreSQL - FamilyHubOS`.
+The workflow writes the sanitized `technicalLog` object into `workflow_runs` through the `18 Log Workflow Run` PostgreSQL node. The `/last` command reads this table to return the latest recorded meeting in Telegram. If the workflow sync does not bind the credential automatically, open this node in n8n and select `PostgreSQL - FamilyHubOS`.
 
 ## Logged Fields
 

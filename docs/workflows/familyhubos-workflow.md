@@ -28,8 +28,9 @@ Supported early commands:
 - `/status`
 - `/choose`
 - `/idea`
+- `/last`
 
-`/choose` returns inline category buttons. Category button clicks are handled through Telegram callback queries.
+`/choose` returns inline category buttons. `/last` reads PostgreSQL and returns the latest recorded meeting. Natural text such as `dernier meeting` is also accepted. Category button clicks are handled through Telegram callback queries.
 
 Unauthorized requests receive a neutral response.
 

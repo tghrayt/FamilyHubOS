@@ -109,6 +109,10 @@ familyhubos:topic:<categoryId>:<topicId>:v1
 familyhubos:auto:v1
 ```
 
+## Last Meeting
+
+`/last` returns the latest recorded meeting from PostgreSQL. The same intent can also be sent without a slash by writing `dernier meeting`, `dernier sujet` or `last meeting`.
+
 ## Telegram Test Scenarios
 
 - Authorized user starts `/choose`.
