@@ -95,6 +95,7 @@ Expected behavior :
 - Status: `Not started`.
 - Source: `Telegram`.
 - Store author and return the Notion page URL in Telegram.
+- If the same `/idea` text already exists in the `Topics` database, reuse the existing page instead of creating a duplicate.
 
 ## Callback Design
 

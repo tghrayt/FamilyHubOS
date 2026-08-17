@@ -576,8 +576,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3120,
-        340
+        3900,
+        -260
       ]
     },
     {
@@ -605,8 +605,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3380,
-        340
+        4160,
+        -260
       ],
       "credentials": {
         "notionApi": {
@@ -623,8 +623,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3640,
-        340
+        4420,
+        -260
       ]
     },
     {
@@ -1026,6 +1026,98 @@
         5460,
         120
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst topic = input.selectedTopic || 'Idée FamilyHubOS';\n\nreturn [{\n  json: {\n    ...input,\n    notionTopicSearch: {\n      filter: {\n        property: 'Title',\n        title: {\n          equals: topic\n        }\n      },\n      page_size: 1\n    }\n  }\n}];\n"
+      },
+      "id": "build-notion-topic-duplicate-search",
+      "name": "12 Build Notion Topic Duplicate Search",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.notion.com/v1/databases/cc2fbc41-7bfc-43af-8580-7f2086e6d16d/query",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.notionTopicSearch) }}",
+        "options": {}
+      },
+      "id": "search-existing-notion-topic",
+      "name": "13 Search Existing Notion Topic",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3380,
+        -360
+      ],
+      "credentials": {
+        "notionApi": {
+          "name": "FamilyHubOS n8n"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "existing-topic-page",
+              "leftValue": "={{ ($json.results || []).length > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-existing-notion-topic",
+      "name": "14 Has Existing Notion Topic?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3640,
+        -360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const searchResult = $json;\nconst previous = $('09 TEST_SUCCESS or Runtime Result').first().json;\nconst existing = (searchResult.results || [])[0] || {};\nconst pageUrl = existing.url || null;\nconst topic = previous.selectedTopic || 'Idée FamilyHubOS';\n\nreturn [{\n  json: {\n    ...previous,\n    technicalLog: {\n      ...(previous.technicalLog || {}),\n      step: 'notion-topic-already-exists',\n      status: 'SUCCESS',\n      notionPageUrl: pageUrl,\n      finishedAt: new Date().toISOString()\n    },\n    telegramReplyMarkup: null,\n    responseText: pageUrl\n      ? `Idée déjà présente dans Notion.\\n\\n${topic}\\n\\n${pageUrl}`\n      : `Idée déjà présente dans Notion.\\n\\n${topic}`\n  }\n}];\n"
+      },
+      "id": "prepare-existing-notion-topic-confirmation",
+      "name": "15 Prepare Existing Notion Topic Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3900,
+        -460
+      ]
     }
   ],
   "connections": {
@@ -1332,7 +1424,7 @@
       "main": [
         [
           {
-            "node": "12 Build Notion Topic Payload",
+            "node": "12 Build Notion Topic Duplicate Search",
             "type": "main",
             "index": 0
           }
@@ -1596,6 +1688,57 @@
         [
           {
             "node": "16 Create Google Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 Build Notion Topic Duplicate Search": {
+      "main": [
+        [
+          {
+            "node": "13 Search Existing Notion Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13 Search Existing Notion Topic": {
+      "main": [
+        [
+          {
+            "node": "14 Has Existing Notion Topic?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "14 Has Existing Notion Topic?": {
+      "main": [
+        [
+          {
+            "node": "15 Prepare Existing Notion Topic Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "12 Build Notion Topic Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "15 Prepare Existing Notion Topic Confirmation": {
+      "main": [
+        [
+          {
+            "node": "18 Log Workflow Run",
             "type": "main",
             "index": 0
           }
