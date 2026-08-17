@@ -44,7 +44,7 @@ The workflow log deliberately stores only operational fields:
 - workflow name and n8n execution id
 - Telegram interaction/chat/user ids
 - route, step, status
-- meeting id, category, topic
+- meeting id, category, topic when a meeting or idea exists
 - source count
 - Notion page URL
 - Google Calendar event id/URL
