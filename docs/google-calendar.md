@@ -107,4 +107,4 @@ The repository only stores workflow structure and documentation. Secrets stay in
   -> Telegram confirmation
 ```
 
-The native Google Calendar node receives the calendar ID from `15 Build Google Calendar Event Payload`. A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
+The native Google Calendar node receives the calendar ID from `15 Build Google Calendar Event Payload`. The workflow now generates a stable Google Calendar event ID from meeting date, category and topic. Before creating an event, it tries to fetch that event ID and reuses it when found. This prevents duplicate Calendar events on workflow retries.
