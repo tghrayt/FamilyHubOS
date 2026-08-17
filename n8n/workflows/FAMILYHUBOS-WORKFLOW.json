@@ -178,7 +178,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2080,
+        3120,
         80
       ]
     },
@@ -191,7 +191,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2340,
+        3380,
         80
       ]
     },
@@ -223,7 +223,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2600,
+        3640,
         80
       ]
     },
@@ -236,7 +236,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2860,
+        3900,
         0
       ]
     },
@@ -379,13 +379,13 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2860,
+        3900,
         160
       ]
     },
     {
       "parameters": {
-        "jsCode": "const input = $('09 TEST_SUCCESS or Runtime Result').first().json;\nconst categoryLabels = {\n  developpement: 'Développement',\n  nutrition: 'Nutrition',\n  sante: 'Santé',\n  culture: 'Culture',\n  musique: 'Musique',\n  sciences: 'Sciences',\n  loisirs: 'Loisirs',\n  parentalite: 'Parentalité',\n  nature: 'Nature',\n  lecture: 'Lecture',\n  auto: 'Sciences'\n};\n\nconst databaseId = '38191dcb-f47f-474d-bb23-4ce6b9b729c8';\nconst category = categoryLabels[input.selectedCategory] || 'Autre';\nconst topic = input.selectedTopic || input.meeting?.topic || 'Sujet FamilyHubOS';\nconst meetingNumber = input.meeting?.number || 1;\nconst title = `Family Meeting #${meetingNumber} - ${topic}`;\nconst today = new Date().toISOString().slice(0, 10);\nconst childAge = input.familyContext?.child?.ageLabel || '';\nconst acceptedSources = input.sourceValidation?.acceptedSources || input.meeting?.sources || [];\nconst sourceBlocks = acceptedSources.flatMap((source) => ([\n  {\n    object: 'block',\n    type: 'bulleted_list_item',\n    bulleted_list_item: {\n      rich_text: [\n        { type: 'text', text: { content: `${source.title} - ${source.publisher || 'source'}` } },\n        { type: 'text', text: { content: ` | score ${source.score || 'n/a'} | ${source.validationReason || 'à vérifier'}` } }\n      ]\n    }\n  },\n  {\n    object: 'block',\n    type: 'paragraph',\n    paragraph: {\n      rich_text: [{ type: 'text', text: { content: source.url || '' } }]\n    }\n  }\n]));\n\nreturn [{\n  json: {\n    parent: {\n      database_id: databaseId\n    },\n    properties: {\n      Title: {\n        title: [{ text: { content: title } }]\n      },\n      Category: {\n        select: { name: category }\n      },\n      Topic: {\n        rich_text: [{ text: { content: topic } }]\n      },\n      Status: {\n        status: { name: 'Not started' }\n      },\n      ChildAge: {\n        rich_text: [{ text: { content: childAge } }]\n      },\n      PreparationStatus: {\n        select: { name: 'Draft' }\n      },\n      MeetingNumber: {\n        number: meetingNumber\n      },\n      Date: {\n        date: { start: today }\n      },\n      TelegramInteractionId: {\n        rich_text: [{ text: { content: input.telegram?.interactionId || '' } }]\n      },\n      SourceCount: {\n        number: acceptedSources.length\n      }\n    },\n    children: [\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Résumé' } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Sujet : ${topic}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Catégorie : ${category}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Âge enfant : ${childAge}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Pourquoi maintenant' } }] }\n      },\n      {\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: input.research?.whyNow || 'Sujet adapté au contexte actuel de l’enfant.' } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Questions de discussion' } }] }\n      },\n      ...((input.research?.discussionQuestions || [\n        'Qu’est-ce qu’on veut comprendre ?',\n        'Qu’est-ce qu’on observe déjà à la maison ?',\n        'Quelle petite action tester cette semaine ?'\n      ]).map((question) => ({\n        object: 'block',\n        type: 'numbered_list_item',\n        numbered_list_item: { rich_text: [{ type: 'text', text: { content: question } }] }\n      }))),\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Sources candidates' } }] }\n      },\n      ...(sourceBlocks.length > 0 ? sourceBlocks : [{\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: 'Aucune source candidate validée pour le moment.' } }] }\n      }]),\n      {\n        object: 'block',\n        type: 'callout',\n        callout: {\n          icon: { type: 'emoji', emoji: '⚠️' },\n          color: 'yellow_background',\n          rich_text: [{ type: 'text', text: { content: 'Sources candidates non consultées automatiquement. À vérifier avant de prendre une décision importante.' } }]\n        }\n      }\n    ]\n  }\n}];\n"
+        "jsCode": "const input = $('09 TEST_SUCCESS or Runtime Result').first().json;\nconst categoryLabels = {\n  developpement: 'Développement',\n  nutrition: 'Nutrition',\n  sante: 'Santé',\n  culture: 'Culture',\n  musique: 'Musique',\n  sciences: 'Sciences',\n  loisirs: 'Loisirs',\n  parentalite: 'Parentalité',\n  nature: 'Nature',\n  lecture: 'Lecture',\n  auto: 'Sciences'\n};\n\nconst databaseId = '38191dcb-f47f-474d-bb23-4ce6b9b729c8';\nconst category = categoryLabels[input.selectedCategory] || 'Autre';\nconst topic = input.selectedTopic || input.meeting?.topic || 'Sujet FamilyHubOS';\nconst meetingNumber = input.meeting?.number || 1;\nconst title = `Family Meeting #${meetingNumber} - ${topic}`;\nconst today = new Date().toISOString().slice(0, 10);\nconst childAge = input.familyContext?.child?.ageLabel || '';\nconst acceptedSources = input.sourceValidation?.acceptedSources || input.meeting?.sources || [];\nconst keyPoints = input.research?.keyPoints || [];\nconst practicalIdeas = input.research?.practicalIdeas || [];\nconst warnings = input.research?.warnings || [];\nconst summary = input.research?.executiveSummary || 'Préparation initiale à compléter.';\nconst sourceBlocks = acceptedSources.flatMap((source) => ([\n  {\n    object: 'block',\n    type: 'bulleted_list_item',\n    bulleted_list_item: {\n      rich_text: [\n        { type: 'text', text: { content: `${source.title} - ${source.publisher || 'source'}` } },\n        { type: 'text', text: { content: ` | score ${source.score || 'n/a'} | ${source.validationReason || 'à vérifier'}` } }\n      ]\n    }\n  },\n  {\n    object: 'block',\n    type: 'paragraph',\n    paragraph: {\n      rich_text: [{ type: 'text', text: { content: source.url || '' } }]\n    }\n  }\n]));\n\nreturn [{\n  json: {\n    parent: {\n      database_id: databaseId\n    },\n    properties: {\n      Title: {\n        title: [{ text: { content: title } }]\n      },\n      Category: {\n        select: { name: category }\n      },\n      Topic: {\n        rich_text: [{ text: { content: topic } }]\n      },\n      Status: {\n        status: { name: 'Not started' }\n      },\n      ChildAge: {\n        rich_text: [{ text: { content: childAge } }]\n      },\n      PreparationStatus: {\n        select: { name: 'Draft' }\n      },\n      MeetingNumber: {\n        number: meetingNumber\n      },\n      Date: {\n        date: { start: today }\n      },\n      TelegramInteractionId: {\n        rich_text: [{ text: { content: input.telegram?.interactionId || '' } }]\n      },\n      SourceCount: {\n        number: acceptedSources.length\n      }\n    },\n    children: [\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Résumé' } }] }\n      },\n      {\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: summary } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Sujet : ${topic}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Catégorie : ${category}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: `Âge enfant : ${childAge}` } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Pourquoi maintenant' } }] }\n      },\n      {\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: input.research?.whyNow || 'Sujet adapté au contexte actuel de l’enfant.' } }] }\n      },\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Points clés' } }] }\n      },\n      ...(keyPoints.length > 0 ? keyPoints.map((point) => ({\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: point } }] }\n      })) : []),\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Questions de discussion' } }] }\n      },\n      ...((input.research?.discussionQuestions || [\n        'Qu’est-ce qu’on veut comprendre ?',\n        'Qu’est-ce qu’on observe déjà à la maison ?',\n        'Quelle petite action tester cette semaine ?'\n      ]).map((question) => ({\n        object: 'block',\n        type: 'numbered_list_item',\n        numbered_list_item: { rich_text: [{ type: 'text', text: { content: question } }] }\n      }))),\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Idées pratiques' } }] }\n      },\n      ...(practicalIdeas.length > 0 ? practicalIdeas.map((idea) => ({\n        object: 'block',\n        type: 'bulleted_list_item',\n        bulleted_list_item: { rich_text: [{ type: 'text', text: { content: idea } }] }\n      })) : []),\n      {\n        object: 'block',\n        type: 'heading_2',\n        heading_2: { rich_text: [{ type: 'text', text: { content: 'Sources candidates' } }] }\n      },\n      ...(sourceBlocks.length > 0 ? sourceBlocks : [{\n        object: 'block',\n        type: 'paragraph',\n        paragraph: { rich_text: [{ type: 'text', text: { content: 'Aucune source candidate validée pour le moment.' } }] }\n      }]),\n      {\n        object: 'block',\n        type: 'callout',\n        callout: {\n          icon: { type: 'emoji', emoji: '⚠️' },\n          color: 'yellow_background',\n          rich_text: [{ type: 'text', text: { content: ['Sources candidates non consultées automatiquement. À vérifier avant de prendre une décision importante.', ...warnings].join(' ') } }]\n        }\n      }\n    ]\n  }\n}];\n"
       },
       "id": "build-notion-page-payload",
       "name": "12 Build Notion Page Payload",
@@ -563,7 +563,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        2860,
+        3900,
         340
       ]
     },
@@ -690,7 +690,7 @@
         "operation": "executeQuery",
         "query": "insert into workflow_runs (\n    workflow_name,\n    execution_id,\n    telegram_interaction_id,\n    telegram_chat_id,\n    telegram_user_id,\n    meeting_id,\n    route,\n    step,\n    status,\n    category,\n    topic,\n    source_count,\n    notion_page_url,\n    calendar_event_id,\n    calendar_event_url,\n    error_code,\n    error_message,\n    started_at,\n    finished_at,\n    duration_ms,\n    metadata\n) values (\n    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,\n    $11, $12, $13, $14, $15, $16, $17,\n    $18::timestamptz, $19::timestamptz, $20::integer, $21::jsonb\n)\nreturning $22::jsonb as familyhubos_payload;",
         "options": {
-          "queryReplacement": "={{ [\n  $json.technicalLog.workflowName,\n  $json.technicalLog.executionId,\n  $json.technicalLog.telegramInteractionId,\n  $json.technicalLog.telegramChatId,\n  $json.technicalLog.telegramUserId,\n  $json.technicalLog.meetingId,\n  $json.technicalLog.route,\n  $json.technicalLog.step,\n  $json.technicalLog.status,\n  $json.technicalLog.category,\n  $json.technicalLog.topic,\n  $json.technicalLog.sourceCount,\n  $json.technicalLog.notionPageUrl,\n  $json.technicalLog.calendarEventId,\n  $json.technicalLog.calendarEventUrl,\n  $json.technicalLog.errorCode,\n  $json.technicalLog.errorMessage,\n  $json.technicalLog.startedAt,\n  $json.technicalLog.finishedAt,\n  $json.technicalLog.durationMs,\n  JSON.stringify({ route: $json.route, researchStatus: $json.researchStatus, calendarCreateStatus: $json.calendarCreateStatus || null }),\n  JSON.stringify($json)\n] }}",
+          "queryReplacement": "={{ [\n  $json.technicalLog.workflowName,\n  $json.technicalLog.executionId,\n  $json.technicalLog.telegramInteractionId,\n  $json.technicalLog.telegramChatId,\n  $json.technicalLog.telegramUserId,\n  $json.technicalLog.meetingId,\n  $json.technicalLog.route,\n  $json.technicalLog.step,\n  $json.technicalLog.status,\n  $json.technicalLog.category,\n  $json.technicalLog.topic,\n  $json.technicalLog.sourceCount,\n  $json.technicalLog.notionPageUrl,\n  $json.technicalLog.calendarEventId,\n  $json.technicalLog.calendarEventUrl,\n  $json.technicalLog.errorCode,\n  $json.technicalLog.errorMessage,\n  $json.technicalLog.startedAt,\n  $json.technicalLog.finishedAt,\n  $json.technicalLog.durationMs,\n  JSON.stringify({ route: $json.route, researchStatus: $json.researchStatus, llmStatus: $json.llmStatus || null, calendarCreateStatus: $json.calendarCreateStatus || null }),\n  JSON.stringify($json)\n] }}",
           "queryBatching": "independently"
         }
       },
@@ -720,6 +720,92 @@
       "position": [
         5720,
         160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-meeting-topic",
+              "leftValue": "={{ Boolean($json.research?.topic) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "should-call-gemini",
+      "name": "07 Should Call Gemini?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst sources = input.sourceValidation?.acceptedSources || [];\nconst sourceText = sources.map((source, index) =>\n  `${index + 1}. ${source.title} - ${source.publisher} - ${source.url}`\n).join('\\n');\n\nconst prompt = `\nTu prépares une fiche de réunion familiale pour des parents.\nRéponds uniquement en JSON valide, sans markdown.\n\nContexte:\n- Sujet: ${input.research.topic}\n- Catégorie: ${input.research.category}\n- Âge enfant: ${input.familyContext.child.ageLabel}\n- Langue: français\n\nSources candidates à vérifier:\n${sourceText || 'Aucune source candidate.'}\n\nContraintes:\n- Ne prétends pas avoir consulté les sources.\n- Ne donne pas de diagnostic médical.\n- Ne cite pas de statistiques non fournies.\n- Si une information doit être vérifiée, dis-le explicitement.\n- Ton style doit être clair, concret, utile pour une discussion parentale.\n\nFormat JSON attendu:\n{\n  \"executiveSummary\": \"3 à 5 phrases\",\n  \"whyNow\": \"1 à 3 phrases\",\n  \"keyPoints\": [\"point 1\", \"point 2\", \"point 3\"],\n  \"discussionQuestions\": [\"question 1\", \"question 2\", \"question 3\"],\n  \"practicalIdeas\": [\"idée 1\", \"idée 2\", \"idée 3\"],\n  \"warnings\": [\"prudence 1\"]\n}\n`.trim();\n\nreturn [{\n  json: {\n    ...input,\n    llmRequest: {\n      provider: 'gemini',\n      model: 'gemini-3.5-flash',\n      prompt\n    },\n    geminiPayload: {\n      contents: [\n        {\n          role: 'user',\n          parts: [{ text: prompt }]\n        }\n      ],\n      generationConfig: {\n        temperature: 0.4,\n        maxOutputTokens: 1200,\n        responseMimeType: 'application/json'\n      }\n    }\n  }\n}];\n"
+      },
+      "id": "07-build-gemini-request",
+      "name": "07 Build Gemini Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2340,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.geminiPayload) }}",
+        "options": {}
+      },
+      "id": "call-gemini-summary",
+      "name": "07 Call Gemini Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        -60
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "name": "Gemini - FamilyHubOS"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const previous = $('07 Build Gemini Request').first().json;\nconst response = $json;\nconst rawText = response.candidates?.[0]?.content?.parts\n  ?.map(part => part.text || '')\n  .join('\\n')\n  .trim();\n\nfunction parseJsonText(text) {\n  if (!text) return null;\n  const cleaned = text\n    .replace(/^\\s*```json\\s*/i, '')\n    .replace(/^\\s*```\\s*/i, '')\n    .replace(/\\s*```\\s*$/i, '')\n    .trim();\n  return JSON.parse(cleaned);\n}\n\nlet llmPreparation = null;\nlet llmStatus = 'SKIPPED_OR_FAILED';\nlet llmError = response.error?.message || null;\n\ntry {\n  llmPreparation = parseJsonText(rawText);\n  if (llmPreparation) {\n    llmStatus = 'CREATED';\n  }\n} catch (error) {\n  llmError = error.message;\n}\n\nconst research = llmPreparation ? {\n  ...previous.research,\n  mode: 'GEMINI_DRAFT_WITH_SOURCE_CANDIDATES',\n  executiveSummary: llmPreparation.executiveSummary || previous.research.executiveSummary,\n  whyNow: llmPreparation.whyNow || previous.research.whyNow,\n  keyPoints: Array.isArray(llmPreparation.keyPoints) ? llmPreparation.keyPoints : previous.research.keyPoints,\n  discussionQuestions: Array.isArray(llmPreparation.discussionQuestions) ? llmPreparation.discussionQuestions : previous.research.discussionQuestions,\n  practicalIdeas: Array.isArray(llmPreparation.practicalIdeas) ? llmPreparation.practicalIdeas : previous.research.practicalIdeas,\n  warnings: Array.isArray(llmPreparation.warnings) ? llmPreparation.warnings : previous.research.warnings\n} : previous.research;\n\nreturn [{\n  json: {\n    ...previous,\n    research,\n    llmPreparation,\n    llmStatus,\n    llmError\n  }\n}];\n"
+      },
+      "id": "07-parse-gemini-summary",
+      "name": "07 Parse Gemini Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        -60
       ]
     }
   ],
@@ -834,7 +920,7 @@
       "main": [
         [
           {
-            "node": "08 Build Meeting",
+            "node": "07 Should Call Gemini?",
             "type": "main",
             "index": 0
           }
@@ -1123,6 +1209,57 @@
         [
           {
             "node": "11 Has Telegram Buttons?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Should Call Gemini?": {
+      "main": [
+        [
+          {
+            "node": "07 Build Gemini Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "08 Build Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Build Gemini Request": {
+      "main": [
+        [
+          {
+            "node": "07 Call Gemini Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Call Gemini Summary": {
+      "main": [
+        [
+          {
+            "node": "07 Parse Gemini Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 Parse Gemini Summary": {
+      "main": [
+        [
+          {
+            "node": "08 Build Meeting",
             "type": "main",
             "index": 0
           }

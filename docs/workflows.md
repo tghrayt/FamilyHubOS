@@ -29,11 +29,12 @@ Inside the workflow:
 13. Google Calendar event creation after Notion meeting creation
 14. Source candidate builder
 15. Source candidate validation
-16. Meeting builder placeholder
-17. PostgreSQL workflow_runs insert from sanitized technicalLog
-18. Restore workflow payload after logging
-19. Telegram sendMessage for webhook runs
-20. Manual test output or webhook response
+16. Gemini preparation draft for selected meeting topics
+17. Meeting builder
+18. PostgreSQL workflow_runs insert from sanitized technicalLog
+19. Restore workflow payload after logging
+20. Telegram sendMessage for webhook runs
+21. Manual test output or webhook response
 
 ## Manual Test
 
