@@ -29,12 +29,13 @@ Inside the workflow:
 13. Google Calendar event creation after Notion meeting creation
 14. Source candidate builder
 15. Source candidate validation
-16. Gemini preparation draft for selected meeting topics
-17. Meeting builder
-18. PostgreSQL workflow_runs insert from sanitized technicalLog
-19. Restore workflow payload after logging
-20. Telegram sendMessage for webhook runs
-21. Manual test output or webhook response
+16. Source URL reachability checks
+17. Gemini preparation draft for selected meeting topics
+18. Meeting builder
+19. PostgreSQL workflow_runs insert from sanitized technicalLog
+20. Restore workflow payload after logging
+21. Telegram sendMessage for webhook runs
+22. Manual test output or webhook response
 
 ## Manual Test
 
@@ -54,12 +55,9 @@ This proves the workflow imports, executes, builds context and returns a visible
 
 ## Next Real Integrations
 
-After the Telegram, Notion and Google Calendar paths are stable, connect these pieces one by one:
+The current workflow adds source candidates, checks URL reachability, enriches the meeting draft with Gemini, writes Notion and Calendar records, and logs technical state to PostgreSQL.
 
-- Web search provider
-- LLM structured summary
-
-The current workflow already adds source candidates to the Notion meeting page. They are selected from a small curated catalog and clearly marked as candidates, not as fetched or verified research.
+The next source milestone is real content extraction and source-specific summaries, not just URL reachability.
 
 ## Idempotency
 
