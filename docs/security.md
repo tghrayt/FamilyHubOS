@@ -16,6 +16,8 @@ The `/whoami` command is the only diagnostic allowlist exception. It may run bef
 
 Current authorized Telegram group chat ID: `-5543186089`.
 
+Current authorized Telegram parent user IDs: `6869454917`, `8003324252`.
+
 Required configuration :
 
 ```text
