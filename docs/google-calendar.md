@@ -83,7 +83,7 @@ For the native n8n Google Calendar node, use the real Calendar ID. For the main 
 
 For a shared family calendar, use the calendar's real Calendar ID from Google Calendar settings.
 
-The workflow currently reads this value from the n8n environment variable:
+The workflow reads this value from the n8n environment variable inside `15 Build Google Calendar Event Payload`:
 
 ```text
 GOOGLE_CALENDAR_ID=<your-google-calendar-id>
@@ -107,4 +107,4 @@ The repository only stores workflow structure and documentation. Secrets stay in
   -> Telegram confirmation
 ```
 
-The native Google Calendar node creates events in the main calendar for now (`<your-google-calendar-id>`). A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.
+The native Google Calendar node receives the calendar ID from `15 Build Google Calendar Event Payload`. A later improvement should add full idempotency using a stable event key derived from topic, category and meeting date.

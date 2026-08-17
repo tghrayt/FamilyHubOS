@@ -629,7 +629,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst payload = input.calendarPayload || {};\n\nfunction toGoogleLocalDateTime(value) {\n  const date = new Date(value);\n  if (Number.isNaN(date.getTime())) {\n    throw new Error(`Invalid Calendar date: ${value}`);\n  }\n\n  const parts = new Intl.DateTimeFormat('sv-SE', {\n    timeZone: payload.timezone || 'Europe/Paris',\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false\n  }).formatToParts(date);\n\n  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));\n  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}:${values.second}`;\n}\n\nconst event = {\n  summary: payload.summary || input.meeting?.title || 'FamilyHubOS meeting',\n  description: payload.description || '',\n  start: {\n    dateTime: toGoogleLocalDateTime(payload.start || input.meeting?.date || new Date().toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  },\n  end: {\n    dateTime: toGoogleLocalDateTime(payload.end || new Date(Date.now() + 60 * 60 * 1000).toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  }\n};\n\nreturn [{\n  json: {\n    ...input,\n    googleCalendarEventPayload: event\n  }\n}];"
+        "jsCode": "const input = $json;\nconst payload = input.calendarPayload || {};\nconst calendarId = ($env.GOOGLE_CALENDAR_ID || '').trim();\n\nif (!calendarId) {\n  throw new Error('Missing GOOGLE_CALENDAR_ID environment variable on the n8n deployment.');\n}\n\nfunction toGoogleLocalDateTime(value) {\n  const date = new Date(value);\n  if (Number.isNaN(date.getTime())) {\n    throw new Error(`Invalid Calendar date: ${value}`);\n  }\n\n  const parts = new Intl.DateTimeFormat('sv-SE', {\n    timeZone: payload.timezone || 'Europe/Paris',\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false\n  }).formatToParts(date);\n\n  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));\n  return `${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}:${values.second}`;\n}\n\nconst event = {\n  summary: payload.summary || input.meeting?.title || 'FamilyHubOS meeting',\n  description: payload.description || '',\n  start: {\n    dateTime: toGoogleLocalDateTime(payload.start || input.meeting?.date || new Date().toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  },\n  end: {\n    dateTime: toGoogleLocalDateTime(payload.end || new Date(Date.now() + 60 * 60 * 1000).toISOString()),\n    timeZone: payload.timezone || 'Europe/Paris'\n  }\n};\n\nreturn [{\n  json: {\n    ...input,\n    googleCalendarId: calendarId,\n    googleCalendarEventPayload: event\n  }\n}];"
       },
       "id": "build-google-calendar-event-payload",
       "name": "15 Build Google Calendar Event Payload",
@@ -647,7 +647,7 @@
         "calendar": {
           "__rl": true,
           "mode": "id",
-          "value": "={{ $env.GOOGLE_CALENDAR_ID }}"
+          "value": "={{ $json.googleCalendarId }}"
         },
         "start": "={{ $json.googleCalendarEventPayload.start.dateTime }}",
         "end": "={{ $json.googleCalendarEventPayload.end.dateTime }}",
