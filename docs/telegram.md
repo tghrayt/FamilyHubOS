@@ -111,7 +111,7 @@ familyhubos:auto:v1
 
 ## Main Menu
 
-`/start` and `/help` show inline menu buttons for preparing a meeting, reading the latest meeting, checking status and learning how to add an idea. The menu uses callback data under `familyhubos:menu:*:v1`.
+`/start` and `/help` show inline menu buttons for proposing a topic, preparing a meeting, reading the latest meeting, checking status and learning how to add an idea. The menu uses callback data under `familyhubos:menu:*:v1`.
 
 ## Whoami Diagnostic
 
